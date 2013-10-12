@@ -1,62 +1,60 @@
 <?php
-/**
- *
- * PHP 5
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       app.View.Layouts
- * @since         CakePHP(tm) v 0.10.0.1076
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
-
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+    $cakeDescription = '.:: UCABsocial ::.';
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
-		<?php echo $cakeDescription ?>:
-		<?php echo $title_for_layout; ?>
+		<?php echo $cakeDescription ?>
 	</title>
 	<?php
 		echo $this->Html->meta('icon');
-
-		echo $this->Html->css('cake.generic');
-
+		echo $this->Html->css('bootstrap');                 
+		echo $this->Html->css('flat-ui'); 
+		echo $this->Html->css('demo');                 
+                echo $this->Html->script('jquery-1.8.3.min');
+                echo $this->Html->script('jquery-ui-1.10.3.custom.min');
+                echo $this->Html->script('jquery.ui.touch-punch.min');
+                echo $this->Html->script('bootstrap.min');
+                echo $this->Html->script('bootstrap-select');
+                echo $this->Html->script('bootstrap-switch');
+                echo $this->Html->script('flatui-checkbox');                
+                echo $this->Html->script('flatui-radio');                
+                echo $this->Html->script('jquery.tagsinput');
+                echo $this->Html->script('jquery.placeholder');
+                echo $this->Html->script('js/jquery.stacktable');
+                echo $this->Html->script('application'); 
+                echo $this->Html->script('oauthpopup');
+                
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
 	?>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+    <![endif]-->    
 </head>
 <body>
-	<div id="container">
-		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
-		</div>
-		<div id="content">
+    <div id="container">
+            <div id="header">
+                <div style="float: left; width: 50%; text-align: center;">
+                    <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120" style="padding-left: 25px;"> 
+                </div>
+                <div style="float: left; width: 50%; text-align: center;">
+                    <h4 style="font-weight: bold; padding-top: 5px;">Bienvenidos a la Red Social Ucabista</h4> 
+                </div>
+            </div>
+            <div id="content" style="padding-top: 35px;">
 
-			<?php echo $this->Session->flash(); ?>
+                    <?php echo $this->Session->flash(); ?>
 
-			<?php echo $this->fetch('content'); ?>
-		</div>
-		<div id="footer">
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
-					'http://www.cakephp.org/',
-					array('target' => '_blank', 'escape' => false)
-				);
-			?>
-		</div>
-	</div>
-	<?php echo $this->element('sql_dump'); ?>
+                    <?php echo $this->fetch('content'); ?>
+            </div>
+            <div id="footer" style="text-align: center;">
+                <h7 style="font-weight: bold; padding-top: 5px;"> Copyright UCAB </h7>
+            </div>
+    </div>
 </body>
 </html>
