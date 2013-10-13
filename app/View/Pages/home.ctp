@@ -1,5 +1,6 @@
 <?php
-    $this->log($_SESSION['Usuario']);
+    //$this->log($_SESSION['Usuario']);
+    //$this->log($_SESSION['Google']);
 ?>
 <html>
     <head>
@@ -22,7 +23,7 @@
                             }
                         });
                         e.preventDefault();
-                    });
+                    });                   
                 });
             </script>            
     </head>
@@ -49,12 +50,26 @@
 
                 <a class="btn btn-primary btn-lg btn-block" href="#">Entrar</a>
                 <a id="facebook" class="btn btn-info btn-lg btn-block">Entrar con Facebook</a>
-                <a class="btn btn-danger btn-lg btn-block" href="#">Entrar con Google+</a>              
+                <a id="google" class="btn btn-danger btn-lg btn-block" href="Home/google_login">Entrar con Google+</a>              
                 <a class="login-link" href="#"><b>¿Olvidaste tu contraseña?</b></a>
               </div>
           </div>
         </div>          
-                   
+            
+            <?php
+$ses_user=$this->Session->read('User');
+$logout=$this->Session->read('logout');
+
+if(!$this->Session->check('User') && empty($ses_user))   {
+echo $this->Html->image('facebook.png',array('id'=>'facebook','style'=>'cursor:pointer;float:left;margin-left:550px;'));
+ }  else{
+ 
+ echo '<img src="https://graph.facebook.com/'. $ses_user['id'] .'/picture" width="30" height="30"/><div>'.$ses_user['name'].'</div>';
+    echo '<a href="'.$logout.'">Logout</a>';
+ 
+}
+    ?>
+            
     </div>           
     </body>	
 </html>

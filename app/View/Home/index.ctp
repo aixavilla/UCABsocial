@@ -37,7 +37,5 @@ echo $this->Html->image('facebook.png',array('id'=>'facebook','style'=>'cursor:p
 }
     ?>
     
-    <a href=""></a>
-    
 </body>
 </html>
