@@ -34,6 +34,7 @@ class HomeController extends AppController {
  
     function facebook_connect()
     {
+        $this->layout = 'paginas';
         Configure::load('facebook');
         $appId=Configure::read('Facebook.appId');
         $app_secret=Configure::read('Facebook.secret');
