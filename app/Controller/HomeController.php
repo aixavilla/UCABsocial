@@ -35,6 +35,7 @@ class HomeController extends AppController {
     function facebook_connect()
     {
         $this->layout = 'paginas';
+        
         Configure::load('facebook');
         $appId=Configure::read('Facebook.appId');
         $app_secret=Configure::read('Facebook.secret');
@@ -49,13 +50,25 @@ class HomeController extends AppController {
         $user = $facebook->getUser();
         $this->Session->write('Usuario',$user);
                         
-        if($user){
-            try{
+        if($user)
+        {
+            try
+            {
                 $user_profile = $facebook->api('/me');
-                $params=array('next' => BASE_URL.'Home/facebook_logout');
+                $params = array('next' => BASE_URL.'Home/facebook_logout');
                 $logout =$facebook->getLogoutUrl($params);
                 $this->Session->write('User',$user_profile);
                 $this->Session->write('logout',$logout);
+                
+                $this->loadModel('User');
+                $usuarioF = $this->Session->read('User');                
+
+                $validar = $this->User->find('first', array('conditions' => array('User.facebookid' => $usuarioF['id'])));
+
+                if(isset($validar['facebookid']))
+                {
+                    $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));
+                } 
             }
             catch(FacebookApiException $e){
                 error_log($e);
