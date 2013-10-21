@@ -23,7 +23,7 @@
                 echo $this->Html->script('flatui-radio');                
                 echo $this->Html->script('jquery.tagsinput');
                 echo $this->Html->script('jquery.placeholder');
-                echo $this->Html->script('js/jquery.stacktable');
+                echo $this->Html->script('jquery.stacktable');
                 echo $this->Html->script('application'); 
                 echo $this->Html->script('oauthpopup');
                 

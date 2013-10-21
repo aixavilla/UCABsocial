@@ -71,7 +71,6 @@ class HomeController extends AppController {
    function facebook_logout(){
         $this->Session->delete('User');
         $this->Session->delete('logout');
-        $this->redirect(array('action'=>'index'));
    }   
    
     public function google_login()

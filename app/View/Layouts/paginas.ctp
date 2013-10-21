@@ -23,7 +23,7 @@
                 echo $this->Html->script('flatui-radio');                
                 echo $this->Html->script('jquery.tagsinput');
                 echo $this->Html->script('jquery.placeholder');
-                echo $this->Html->script('js/jquery.stacktable');
+                echo $this->Html->script('jquery.stacktable');
                 echo $this->Html->script('application'); 
                 echo $this->Html->script('oauthpopup');
                 
@@ -38,14 +38,13 @@
 </head>
 <body>
     <div id="container">
-            <div id="content" style="padding-top: 35px;">
+            <div id="content" style="padding-top: 3px;">
 
                     <?php echo $this->Session->flash(); ?>
 
                     <?php echo $this->fetch('content'); ?>
             </div>
-            <br>
-            <div id="footer" style="text-align: center;">
+            <div id="footer" style="text-align: center; padding-top: 25px;">
                 <h7 style="font-weight: bold; padding-top: 25px;"> Copyright UCAB </h7>
             </div>
     </div>
