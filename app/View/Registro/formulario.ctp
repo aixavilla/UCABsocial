@@ -1,5 +1,6 @@
 <?php
-
+    $this->log($_SESSION['lugares']);
+    $locations = $_SESSION['lugares'];
     $ses_user=$this->Session->read('User');
     
     if(isset($ses_user['first_name']))
@@ -45,21 +46,22 @@
     {
         if($ses_user['gender'] == 'male')
         {    
-            $genero = 'Masculino';
+            $genero = 2;
         }
         else 
         {
-            $genero = 'Femenino';
+            $genero = 1;
         }
     }
     else 
     {
-        $genero = 'Seleccione';
+        $genero = 0;
     }
     
     if(isset($ses_user['birthday']))
     {
-        $fechaNacimiento = $ses_user['birthday'];
+        $fechaNacimientoPrevia = $ses_user['birthday'];
+        $fechaNacimiento = date("d-m-Y", strtotime($fechaNacimientoPrevia));        
     }
     else 
     {
@@ -77,115 +79,148 @@
        
 ?>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-<style type="text/css">
-    .custom-select {
-      position : relative;
-      width: 100%;
-      max-width:  25em;
-      margin: 4em auto;
-      cursor: pointer;
-    }
-    .select,
-    .label{
-      display: block;
-    }
-    .select {
-      width: 100%;
-      position: absolute;
-      top: 0;
-      padding: 1em;
-      height: 4em;
-      opacity: 0;
-      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-      background: none transparent;
-      border: 0 none;
-    }
-    .label {
-      position:  relative;
-      padding: 1em;
-      border-radius: .5em;
-      cursor: pointer;
-    }
-    .label::after {
-      content: "▼";
-      position: absolute;
-      right: 0;
-      top: 0;
-      padding: 1em;
-      border-left: 1px solid;
-    }
-    .open .label::after {
-       content: "▲";
-    }
-    .select-1 {
-       background: #21cf8f;
-      border-bottom: .25em solid darken(#21cf8f, 10);
-      &:after {
-         border-color: darken(#21cf8f, 10);
-      }
-    }
-    .select-2 {
-       background: #307ddb;
-      border-bottom: .25em solid darken(#307ddb, 10);
-      &:after {
-         border-color: darken(#307ddb, 10);
-      }
-    }
-    .select-3 {
-       background: #f2bb18;
-      border-bottom: .25em solid darken(#f2bb18, 10);
-      &:after {
-         border-color: darken(#f2bb18, 10);
-      }
-    }
-    .select-4 {
-      background: #db3d3d;
-      border-bottom: .25em solid darken(#db3d3d, 10);
-      &:after {
-         border-color: darken(#db3d3d, 10);
-      }
-}
-</style>
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript">
+    
+    (function( $ ) {
+        $.widget( "custom.combobox", {
+          _create: function() {
+            this.wrapper = $( "<span>" )
+              .addClass( "custom-combobox" )
+              .insertAfter( this.element );
+
+            this.element.hide();
+            this._createAutocomplete();
+            this._createShowAllButton();
+          },
+
+          _createAutocomplete: function() {
+            var selected = this.element.children( ":selected" ),
+              value = selected.val() ? selected.text() : "";
+
+            this.input = $( "<input>" )
+              .appendTo( this.wrapper )
+              .val( value )
+              .attr( "title", "" )
+              .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left" )
+              .autocomplete({
+                delay: 0,
+                minLength: 0,
+                source: $.proxy( this, "_source" )
+              })
+              .tooltip({
+                tooltipClass: "ui-state-highlight"
+              });
+
+            this._on( this.input, {
+              autocompleteselect: function( event, ui ) {
+                ui.item.option.selected = true;
+                this._trigger( "select", event, {
+                  item: ui.item.option
+                });
+              },
+
+              autocompletechange: "_removeIfInvalid"
+            });
+          },
+
+          _createShowAllButton: function() {
+            var input = this.input,
+              wasOpen = false;
+
+            $( "<a>" )
+              .attr( "tabIndex", -1 )
+              .attr( "title", "Mostrar todos los elementos" )
+              .tooltip()
+              .appendTo( this.wrapper )
+
+              .removeClass( "ui-corner-all" )
+              .addClass( "custom-combobox-toggle ui-corner-right" )
+              .mousedown(function() {
+                wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+              })
+              .click(function() {
+                input.focus();
+
+                // Close if already visible
+                if ( wasOpen ) {
+                  return;
+                }
+
+                // Pass empty string as value to search for, displaying all results
+                input.autocomplete( "search", "" );
+              });
+          },
+
+          _source: function( request, response ) {
+            var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+            response( this.element.children( "option" ).map(function() {
+              var text = $( this ).text();
+              if ( this.value && ( !request.term || matcher.test(text) ) )
+                return {
+                  label: text,
+                  value: text,
+                  option: this
+                };
+            }) );
+          },
+
+          _removeIfInvalid: function( event, ui ) {
+
+            // Selected an item, nothing to do
+            if ( ui.item ) {
+              return;
+            }
+
+            // Search for a match (case-insensitive)
+            var value = this.input.val(),
+              valueLowerCase = value.toLowerCase(),
+              valid = false;
+            this.element.children( "option" ).each(function() {
+              if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+                this.selected = valid = true;
+                return false;
+              }
+            });
+
+            // Found a match, nothing to do
+            if ( valid ) {
+              return;
+            }
+
+            // Remove invalid value
+            this.input
+              .val( "" )
+              .attr( "title", value + " no produjo resultados de busqueda" )
+              .tooltip( "open" );
+            this.element.val( "" );
+            this._delay(function() {
+              this.input.tooltip( "close" ).attr( "title", "" );
+            }, 2500 );
+            this.input.data( "ui-autocomplete" ).term = "";
+          },
+
+          _destroy: function() {
+            this.wrapper.remove();
+            this.element.show();
+          }
+        });
+      })( jQuery );    
     
     $(document).ready(function() {
         
         var valor = "<?php echo $genero; ?>";
-        $('#spanGenero').html(valor);
+        $('#ddlGenero').val(valor);
+
+        $('.filter-option pull-left').html("BASURA");
           
         $("#txtFechaNacimiento").datepicker({
               changeMonth: true,
               changeYear: true,
-              yearRange: "-100:+0"
+              yearRange: "-100:+0",
+              dateFormat: 'dd-mm-yy'              
          });    
-         
-        $("select").on("click" , function() {
 
-          $(this).parent(".custom-select").toggleClass("open");
-
-        });
-
-        $(document).mouseup(function (e)
-        {
-            var container = $(".custom-select");
-
-            if (container.has(e.target).length === 0)
-            {
-                container.removeClass("open");
-            }
-        });
-
-
-        $("select").on("change" , function() 
-        {
-            var selection = $(this).find("option:selected").text(),
-            labelFor = $(this).attr("id"),
-            label = $("[for='" + labelFor + "']");
-            label.find(".selection-choice").html(selection);
-        }); 
-        
         $( "#combobox" ).combobox();
         $( "#toggle" ).click(function() {
           $( "#combobox" ).toggle();
@@ -253,19 +288,18 @@
                 </tr>
                 <tr>
                     <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
+                        <div style="padding: 1em 3em; margin: 1em 25%; ">                       
                             <div style="float: left;">
                                 <label><b>Género:</b></label>
-                            </div>
+                            </div>                        
                             <div class="col-md-3" style="float: left; width: 300px;">
-                                <label id for="select-choice1" class="label select-1" style="font-size: 95%;"><span id="spanGenero" class="selection-choice" style="font-size: 10pt;">Seleccione</span> </label>
-                                <select id="select-choice1" class="select" style="font-size: 12pt;">
-                                    <option value="0">Seleccione</option>
-                                    <option value="1">Femenino</option>
-                                    <option value="2">Masculino</option>  
-                                </select>
-                            </div>              
-                        </div>                    
+                              <select id="ddlGenero" name="herolist" value="Seleccione" class="select-block">
+                                <option value="0">Seleccione</option>
+                                <option value="1">Femenino</option>
+                                <option value="2">Masculino</option>
+                              </select>
+                            </div>  
+                        </div>                             
                     </td>
                     <td>
                         <div style="padding: 1em 3em; margin: 1em 25%; ">
@@ -301,31 +335,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <select id="combobox">
-                      <option value="">Select one...</option>
-                      <option value="ActionScript">ActionScript</option>
-                      <option value="AppleScript">AppleScript</option>
-                      <option value="Asp">Asp</option>
-                      <option value="BASIC">BASIC</option>
-                      <option value="C">C</option>
-                      <option value="C++">C++</option>
-                      <option value="Clojure">Clojure</option>
-                      <option value="COBOL">COBOL</option>
-                      <option value="ColdFusion">ColdFusion</option>
-                      <option value="Erlang">Erlang</option>
-                      <option value="Fortran">Fortran</option>
-                      <option value="Groovy">Groovy</option>
-                      <option value="Haskell">Haskell</option>
-                      <option value="Java">Java</option>
-                      <option value="JavaScript">JavaScript</option>
-                      <option value="Lisp">Lisp</option>
-                      <option value="Perl">Perl</option>
-                      <option value="PHP">PHP</option>
-                      <option value="Python">Python</option>
-                      <option value="Ruby">Ruby</option>
-                      <option value="Scala">Scala</option>
-                      <option value="Scheme">Scheme</option>
-                    </select>
+                    <td>
+                        <div style="padding: 1em 3em; margin: 1em 25%; ">
+                            <div style="float: left;">
+                                <label><b>Ubicación:</b></label>
+                            </div>
+                            <div class="col-md-3" style="float: left; width: 450px;">
+                                <select id="combobox">
+                                    <?php 
+                                        foreach ($locations as $city)
+                                        {
+                                            echo '<option value="'.$city['c']['Codigo'].'">'.$city['c']['Ciudad'].' - '.$city['co']['Pais'].'</option>';
+                                        }
+                                    ?>
+                                </select>
+                             </div>              
+                        </div>                 
+                    </td>                    
                 </tr>
             </table>
         </form>            
