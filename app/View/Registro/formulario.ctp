@@ -1,6 +1,4 @@
 <?php
-    $this->log($_SESSION['lugares']);
-    $locations = $_SESSION['lugares'];
     $ses_user=$this->Session->read('User');
     
     if(isset($ses_user['first_name']))
@@ -46,16 +44,16 @@
     {
         if($ses_user['gender'] == 'male')
         {    
-            $genero = 2;
+            $genero = 'Masculino';
         }
         else 
         {
-            $genero = 1;
+            $genero = 'Femenino';
         }
     }
     else 
     {
-        $genero = 0;
+        $genero = 'Seleccione';
     }
     
     if(isset($ses_user['birthday']))
@@ -76,156 +74,59 @@
     {
         $email = '';
     }    
-       
+   
+    echo $this->Html->script('views/helpers/auto_complete');    
+    
 ?>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<style>
+        .autoCompleteDiv    { 
+             position: absolute; 
+             border: 1px solid #888; 
+             margin: 0px; 
+             padding: 2px; 
+             display: none; 
+             background: white; 
+        } 
+        .autoCompleteDiv a:hover { 
+            background: none; 
+            background-color: darkblue; 
+            color: white; 
+            font-weight: normal; 
+        } 
+        .autoCompleteDiv a { 
+            background: none; 
+            background-color: white; 
+            color: black; 
+            text-decoration: none; 
+            padding: 2px; 
+            margin: 0px; 
+            display: block; 
+        }   
+</style>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript">
-    
-    (function( $ ) {
-        $.widget( "custom.combobox", {
-          _create: function() {
-            this.wrapper = $( "<span>" )
-              .addClass( "custom-combobox" )
-              .insertAfter( this.element );
 
-            this.element.hide();
-            this._createAutocomplete();
-            this._createShowAllButton();
-          },
-
-          _createAutocomplete: function() {
-            var selected = this.element.children( ":selected" ),
-              value = selected.val() ? selected.text() : "";
-
-            this.input = $( "<input>" )
-              .appendTo( this.wrapper )
-              .val( value )
-              .attr( "title", "" )
-              .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left" )
-              .autocomplete({
-                delay: 0,
-                minLength: 0,
-                source: $.proxy( this, "_source" )
-              })
-              .tooltip({
-                tooltipClass: "ui-state-highlight"
-              });
-
-            this._on( this.input, {
-              autocompleteselect: function( event, ui ) {
-                ui.item.option.selected = true;
-                this._trigger( "select", event, {
-                  item: ui.item.option
-                });
-              },
-
-              autocompletechange: "_removeIfInvalid"
-            });
-          },
-
-          _createShowAllButton: function() {
-            var input = this.input,
-              wasOpen = false;
-
-            $( "<a>" )
-              .attr( "tabIndex", -1 )
-              .attr( "title", "Mostrar todos los elementos" )
-              .tooltip()
-              .appendTo( this.wrapper )
-
-              .removeClass( "ui-corner-all" )
-              .addClass( "custom-combobox-toggle ui-corner-right" )
-              .mousedown(function() {
-                wasOpen = input.autocomplete( "widget" ).is( ":visible" );
-              })
-              .click(function() {
-                input.focus();
-
-                // Close if already visible
-                if ( wasOpen ) {
-                  return;
-                }
-
-                // Pass empty string as value to search for, displaying all results
-                input.autocomplete( "search", "" );
-              });
-          },
-
-          _source: function( request, response ) {
-            var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-            response( this.element.children( "option" ).map(function() {
-              var text = $( this ).text();
-              if ( this.value && ( !request.term || matcher.test(text) ) )
-                return {
-                  label: text,
-                  value: text,
-                  option: this
-                };
-            }) );
-          },
-
-          _removeIfInvalid: function( event, ui ) {
-
-            // Selected an item, nothing to do
-            if ( ui.item ) {
-              return;
-            }
-
-            // Search for a match (case-insensitive)
-            var value = this.input.val(),
-              valueLowerCase = value.toLowerCase(),
-              valid = false;
-            this.element.children( "option" ).each(function() {
-              if ( $( this ).text().toLowerCase() === valueLowerCase ) {
-                this.selected = valid = true;
-                return false;
-              }
-            });
-
-            // Found a match, nothing to do
-            if ( valid ) {
-              return;
-            }
-
-            // Remove invalid value
-            this.input
-              .val( "" )
-              .attr( "title", value + " no produjo resultados de busqueda" )
-              .tooltip( "open" );
-            this.element.val( "" );
-            this._delay(function() {
-              this.input.tooltip( "close" ).attr( "title", "" );
-            }, 2500 );
-            this.input.data( "ui-autocomplete" ).term = "";
-          },
-
-          _destroy: function() {
-            this.wrapper.remove();
-            this.element.show();
-          }
-        });
-      })( jQuery );    
-    
     $(document).ready(function() {
-        
-        var valor = "<?php echo $genero; ?>";
-        $('#ddlGenero').val(valor);
 
-        $('.filter-option pull-left').html("BASURA");
-          
+        var valor = "<?php echo $genero; ?>";
+        $('#ddlGenero').contents(":not(:empty)").first().html(valor);
+        
+        alert($('#ddlGenero').children('.filter-option pull-left').first().html());
+        
+        $('#ddlGenero').children('.filter-option pull-left').html(valor);
+
         $("#txtFechaNacimiento").datepicker({
               changeMonth: true,
               changeYear: true,
               yearRange: "-100:+0",
               dateFormat: 'dd-mm-yy'              
-         });    
+         });  
+         
+        $("#locations").addClass("form-control");       
 
-        $( "#combobox" ).combobox();
-        $( "#toggle" ).click(function() {
-          $( "#combobox" ).toggle();
-        });        
-        
+        alert($('#ddlGenero').contents(":not(:empty)").first().text());
+
     });    
        
 </script>
@@ -292,7 +193,7 @@
                             <div style="float: left;">
                                 <label><b>Género:</b></label>
                             </div>                        
-                            <div class="col-md-3" style="float: left; width: 300px;">
+                            <div class="col-md-3" style="float: left; width: 315px;">
                               <select id="ddlGenero" name="herolist" value="Seleccione" class="select-block">
                                 <option value="0">Seleccione</option>
                                 <option value="1">Femenino</option>
@@ -340,15 +241,21 @@
                             <div style="float: left;">
                                 <label><b>Ubicación:</b></label>
                             </div>
-                            <div class="col-md-3" style="float: left; width: 450px;">
-                                <select id="combobox">
-                                    <?php 
-                                        foreach ($locations as $city)
-                                        {
-                                            echo '<option value="'.$city['c']['Codigo'].'">'.$city['c']['Ciudad'].' - '.$city['co']['Pais'].'</option>';
-                                        }
-                                    ?>
-                                </select>
+                            <div class="col-md-3" style="float: left; width: 315px;">
+                                <?php  
+                                echo $this->AutoComplete->input( 
+                                    'locations', 
+                                    array( 
+                                        'autoCompleteUrl'=>$this->Html->url(  
+                                            array( 
+                                                'controller'=>'Registro', 
+                                                'action'=>'auto_complete', 
+                                            ) 
+                                        ), 
+                                        'autoCompleteRequestItem'=>'autoCompleteText', 
+                                    ) 
+                                ); 
+                                ?>
                              </div>              
                         </div>                 
                     </td>                    

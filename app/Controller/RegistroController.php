@@ -29,10 +29,26 @@ class RegistroController extends AppController
     public function formulario()
     { 
        $this->layout='paginas'; 
-       $this->loadModel("City");
-       $resultado = $this->City->getLocations();
-       $this->Session->write('lugares',$resultado);
-    }   
+    } 
+    
+    function auto_complete() 
+    {
+        $this->loadModel("City");  
+        $terms = $this->City->getLocations($this->params['url']['autoCompleteText']);       
+    
+        $this->Session->write('queryS',$terms);
+        
+        $variable = '';
+        foreach($terms as $termino)
+        {
+            $variable = $variable.$termino['c']['Ciudad'].' - '.$termino['co']['Pais']."*"; 
+        }
+ 
+        $places = explode("*", $variable);
+        $this->set('terms', $places); 
+        $this->layout = 'ajax';     
+    }     
+    
 }
 
 ?>

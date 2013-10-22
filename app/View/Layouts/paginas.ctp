@@ -8,6 +8,7 @@
 	<title>
 		<?php echo $cakeDescription ?>
 	</title>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />    
 	<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('bootstrap');                 
