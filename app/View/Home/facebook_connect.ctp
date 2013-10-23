@@ -1,8 +1,6 @@
 <?php
-
-        $ses_user=$this->Session->read('User');
-        $logout=$this->Session->read('logout');
-
+        $ses_user = $this->Session->read('User');
+        $logout = $this->Session->read('logout');
 ?>
 <script type="text/javascript">
     
@@ -44,7 +42,6 @@
 
 <center>
     <?php
-
         if(!$this->Session->check('User') && empty($ses_user))   
         {
             echo $this->Html->image('facebook.png',array('id'=>'facebook','style'=>'cursor:pointer;float:left;margin-left:550px;'));
@@ -54,17 +51,16 @@
             echo '<div><div style="float: left; width:25%;"><img src="https://graph.facebook.com/'. $ses_user['id'] .'/picture" width="40" height="40"/></div>';
             echo '<div style="float: left; width:75%; text-align: left;"><h4>Hola! '.$ses_user['name'].'</h4><br/><span>Bienvenido a la Red Social Ucabista, ya puedes <br/>compartir tu contenido Multimedia favorito</span></div></div>';
           
-            echo '<div style="clear:both"></div><div style="padding-top:15px;"><h4>Un último paso</h4><br/><span>Para completar tu registro por favor acepta nuestros terminos y condiciones</span></div>';
+            echo '<div style="clear:both"></div><div style="padding-top:15px;"><h4>Un último paso</h4><br/><span>Para completar tu registro por favor acepta nuestros <a href="/UCABsocial/Pages/terminos" target="_blank">terminos y condiciones.</a> </span></div>';
              //echo '<div class="row"><div class="col-md-3"><label class="checkbox" for="checkbox1"><input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">Acepto los <a href="terminos.pdf">terminos y condiciones.</a></label></div></div>';
 //         echo '<a href="'.$logout.'">Logout</a>';
-
         }
     ?>
 </center>
 
     <div class="col-md-3">
         <label class="checkbox" for="checkbox1">
-            <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox"/>Acepto los <a href="terminos.pdf">terminos y condiciones.</a>
+            <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox"/>Acepto los Terminos y Condiciones
         </label>
     </div>
     <div style="clear: both;"></div>
@@ -81,6 +77,4 @@
             <a id="Entrar" class="btn btn-block btn-lg btn-primary" href="javascript:Validar();" style="width: 150px;">Entrar</a> 
         </div>
     </div>
-    <div style="clear: both;"></div>
-    
-             
+    <div style="clear: both;"></div>         

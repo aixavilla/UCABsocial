@@ -75,4 +75,10 @@ class PagesController extends AppController {
 			throw new NotFoundException();
 		}
 	}
+        
+        public function terminos() 
+        {
+            $this->layout='paginas'; 
+            
+        }
 }

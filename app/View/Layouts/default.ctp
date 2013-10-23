@@ -33,7 +33,7 @@
 	?>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
     <!--[if lt IE 9]>
-      <script src="js/html5shiv.js"></script>
+      <script src="../js/html5shiv.js"></script>
     <![endif]-->    
 </head>
 <body>
@@ -53,7 +53,7 @@
                     <?php echo $this->fetch('content'); ?>
             </div>
             <div id="footer" style="text-align: center;">
-                <h7 style="font-weight: bold; padding-top: 5px;"> Copyright UCAB </h7>
+                <h7 style="font-weight: bold; padding-top: 5px;"> UCABsocial® - Copyright - 2013 </h7>
             </div>
     </div>
 </body>

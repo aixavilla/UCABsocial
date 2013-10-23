@@ -43,9 +43,7 @@ class RegistroController extends AppController
     {
         $this->loadModel("City");  
         $terms = $this->City->getLocations($this->params['url']['autoCompleteText']);       
-    
-        $this->Session->write('queryS',$terms);
-        
+ 
         $variable = '';
         foreach($terms as $termino)
         {
@@ -55,6 +53,16 @@ class RegistroController extends AppController
         $places = explode("*", $variable);
         $this->set('terms', $places); 
         $this->layout = 'ajax';     
+    }     
+    
+    function validateUsername() 
+    {
+        $this->loadModel("User");  
+        $consulta = $this->User->validateUsername($this->params['url']['username']);
+                $this->Session->write('validaaate',$consulta);
+        $this->set('respuesta', $consulta);                 
+        $this->layout = 'ajax'; 
+        
     }     
     
 }

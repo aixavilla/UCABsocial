@@ -46,7 +46,7 @@
                     <?php echo $this->fetch('content'); ?>
             </div>
             <div id="footer" style="text-align: center; padding-top: 25px;">
-                <h7 style="font-weight: bold; padding-top: 25px;"> Copyright UCAB </h7>
+                <h7 style="font-weight: bold; padding-top: 5px;"> UCABsocial® - Copyright - 2013 </h7>
             </div>
     </div>
 </body>

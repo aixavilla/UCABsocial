@@ -44,16 +44,16 @@
     {
         if($ses_user['gender'] == 'male')
         {    
-            $genero = 'Masculino';
+            $genero = 2;
         }
         else 
         {
-            $genero = 'Femenino';
+            $genero = 1;
         }
     }
     else 
     {
-        $genero = 'Seleccione';
+        $genero = 0;
     }
     
     if(isset($ses_user['birthday']))
@@ -76,7 +76,8 @@
     }    
    
     echo $this->Html->script('views/helpers/auto_complete');    
-    
+    echo $this->Html->script('validCampoFranz');  
+        
 ?>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <style>
@@ -102,15 +103,103 @@
             padding: 2px; 
             margin: 0px; 
             display: block; 
-        }   
+        }  
+        
+        select#ddlGenero {
+        -webkit-appearance: button;
+        -webkit-border-radius: 2px;
+        -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        -webkit-padding-end: 20px;
+        -webkit-padding-start: 2px;
+        -webkit-user-select: none;
+        background-image: url(../img/icon-selectbox.png), -webkit-linear-gradient(#1ABC9C, #1ABC9C 40%, #1ABC9C);
+        background-position: 97% center;
+        background-repeat: no-repeat;
+        border: 1px solid #AAA;
+        color: #ffff;
+        font-size: inherit;
+        overflow: hidden;
+        padding: 8px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 290px;
+        }       
+        
 </style>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript">
 
+    function Validar() 
+    {
+        if ($('#txtNombre').val() == "") 
+        {
+            $("#txtNombre").focus();
+            $("#spanNombre").text('Por favor introduzca un nombre');            
+            $("#spanNombre").css("display","inherit");
+            $('#spanNombre').delay(5000).fadeOut('slow');       
+            return false;
+        }
+        
+        if ($('#txtApellido').val() == "") 
+        {
+            $("#txtApellido").focus();
+            $("#spanApellido").text('Por favor introduzca un apellido');            
+            $("#spanApellido").css("display","inherit");
+            $('#spanApellido').delay(5000).fadeOut('slow');       
+            return false;
+        }        
+
+        if ($("#ddlGenero option:selected").text() == "Seleccione") {
+            $("#ddlGenero").focus();
+            $("#spanGenero").text('Por favor seleccione un género');             
+            $("#spanGenero").css("display","inherit");
+            $('#spanGenero').delay(5000).fadeOut('slow');  
+            return false;
+        }
+        
+        if ($('#txtFechaNacimiento').val() == "") 
+        {
+            $("#spanFecha").text('Por favor seleccione una fecha');            
+            $("#spanFecha").css("display","inherit");
+            $('#spanFecha').delay(5000).fadeOut('slow');       
+            return false;
+        } 
+        
+        if ($('#txtUsername').val() == "") 
+        {
+            $("#txtUsername").focus();  
+            $("#spanUsername").text('Por favor introduzca un nombre de usuario');            
+            $("#spanUsername").css("display","inherit");
+            $('#spanUsername').delay(5000).fadeOut('slow');       
+            return false;
+        }
+        
+        if ($('#txtEmail').val() == "") 
+        {
+            $("#txtEmail").focus();  
+            $("#spanEmail").text('Por favor introduzca una dirección de correo');            
+            $("#spanEmail").css("display","inherit");
+            $('#spanEmail').delay(5000).fadeOut('slow');       
+            return false;
+        }   
+        
+        if ($('#locations').val() == "") 
+        {
+            $("#locations").focus();  
+            $("#spanLocations").text('Por favor introduzca una ubicación');            
+            $("#spanLocations").css("display","inherit");
+            $('#spanLocations').delay(5000).fadeOut('slow');       
+            return false;
+        }        
+        
+        return true;
+    }
+
     $(document).ready(function() {
 
         var valor = "<?php echo $genero; ?>";
-        $('#ddlGenero option:selected').text(valor);
+        $("#ddlGenero").val(valor);
+        //$('#ddlGenero option:selected').text(valor);
 
         $("#txtFechaNacimiento").datepicker({
               changeMonth: true,
@@ -119,151 +208,204 @@
               dateFormat: 'dd-mm-yy'              
          });  
          
-        $("#locations").addClass("form-control");       
+        $("#locations").addClass("form-control");     
+        
+        $('#txtNombre').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');
+        $('#txtNombreDos').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');
+        $('#txtApellido').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');
+        $('#txtApellidoDos').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');   
+        $('#locations').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');           
+        //$('#miCampo2').validCampoFranz('0123456789'); 
+        
+        $("#txtUsername").focusout(function() {
+                var username = $("#txtUsername").val();
+
+                $.ajax({
+                        url:   '/UCABsocial/Registro/validateUsername?username='+username,
+                        type:  'post',
+                        success:  function (response) {
+                            var resultado = response;
+                            alert(resultado);
+                            if(resultado == "1")
+                            {
+                                $("#spanUsername").css("color","Green"); 
+                                $("#spanUsername").text('Username disponible');            
+                                $("#spanUsername").css("display","inherit"); 
+                                $('#spanUsername').delay(7000).fadeOut('slow');                                  
+                            }
+                            if(resultado == "0")
+                            {
+                                $("#spanUsername").css("color","Red"); 
+                                $("#spanUsername").text('El username ya existe');            
+                                $("#spanUsername").css("display","inherit");
+                                $('#spanUsername').delay(7000).fadeOut('slow');                                
+                            }                            
+                        }
+                });
+        });       
+        
     });    
        
 </script>
 
-<div class="navbar navbar-inverse" style="width: 100%;">          
-    <ul class="nav navbar-nav navbar-left">
-      <li>
-        <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120">           
-      </li>
-    </ul>
-</div>
+<center>
+    <div class="navbar navbar-inverse" style="width: 99.5%;">          
+        <ul class="nav navbar-nav navbar-left"> 
+          <li>
+            <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120">           
+          </li>
+        </ul>
+    </div>
+</center>
 
-<div id="formRegistro" style="text-align: center;" >
-    <center>
-        <form>
-            <table>
-                <tr>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Nombre:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtNombre" type="text" value="<?php echo $primerNombre ?>" class="form-control" />
-                            </div>              
-                        </div>                
-                    </td>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Segundo Nombre:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtNombreDos" type="text" value="<?php echo $segundoNombre ?>" class="form-control" />
-                            </div>              
-                        </div>                
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Apellido:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtApellido" type="text" value="<?php echo $primerApellido ?>" class="form-control" />
-                            </div>              
-                        </div>                
-                    </td>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Segundo Apellido:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtApellidoDos" type="text" value="<?php echo $segundoApellido ?>" class="form-control" />
-                            </div>              
-                        </div>                 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">                       
-                            <div style="float: left;">
-                                <label><b>Género:</b></label>
-                            </div>                        
-                            <div class="col-md-3" id="divGenero" style="float: left; width: 315px;">
-                              <select id="ddlGenero" name="herolist" value="Seleccione" class="select-block">
-                                <option value="0">Seleccione</option>
-                                <option value="1">Femenino</option>
-                                <option value="2">Masculino</option>
-                              </select>
-                            </div>  
-                        </div>                             
-                    </td>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Fecha de Nacimiento:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtFechaNacimiento" type="text" value="<?php echo $fechaNacimiento ?>" readonly="readonly" class="form-control" />
-                            </div>              
-                        </div>                 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Username:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtUsername" type="text" value="" class="form-control" />
-                            </div>              
-                        </div>                    
-                    </td>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Email:</b></label>
-                            </div>
-                            <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                <input id="txtEmail" type="text" value="<?php echo $email ?>" class="form-control" />
-                            </div>              
-                        </div>                 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div style="float: left;">
-                                <label><b>Ubicación:</b></label>
-                            </div>
-                            <div class="col-md-3" style="float: left; width: 315px;">
-                                <?php  
-                                echo $this->AutoComplete->input( 
-                                    'locations', 
-                                    array( 
-                                        'autoCompleteUrl'=>$this->Html->url(  
-                                            array( 
-                                                'controller'=>'Registro', 
-                                                'action'=>'auto_complete', 
-                                            ) 
-                                        ), 
-                                        'autoCompleteRequestItem'=>'autoCompleteText', 
-                                    ) 
-                                ); 
-                                ?>
-                             </div>              
-                        </div>                 
-                    </td> 
-                    <td>
-                        <div style="padding: 1em 3em; margin: 1em 25%; ">
-                            <div class="col-md-3" style="float: left; width: 315px;">
-                                <a class="btn btn-primary btn-lg btn-block" href="#">Registrar</a>
-                            </div>              
-                        </div>                        
-                    </td>
-                </tr>
-            </table>
-        </form>            
-    </center>        
+<div class="login-icon" style="padding-left: 25px; margin-left: 130px;">
+  <img src="../img/login/smile.png" alt="UCABsocial" />
+  <h4>Registro <small>UCABsocial</small></h4>
 </div>
+<center>
+    <div id="formRegistro" class="login-form" style="text-align: center; width: 50%; left: 0;" >
+        <center>
+            <form>
+                <table>
+                    <tr>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Nombre:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtNombre" type="text" value="<?php echo $primerNombre ?>" class="form-control" />
+                                    <span id="spanNombre" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>
+                                </div>              
+                            </div>                
+                        </td>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Segundo Nombre:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtNombreDos" type="text" value="<?php echo $segundoNombre ?>" class="form-control" />                                    
+                                </div>              
+                            </div>                
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Apellido:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtApellido" type="text" value="<?php echo $primerApellido ?>" class="form-control" />
+                                    <span id="spanApellido" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                      
+                                </div>              
+                            </div>                
+                        </td>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Segundo Apellido:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtApellidoDos" type="text" value="<?php echo $segundoApellido ?>" class="form-control" />                                     
+                                </div>              
+                            </div>                 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">                       
+                                <div style="float: left;">
+                                    <label><b>Género:</b></label>
+                                </div>                        
+                                <div class="col-md-3" id="divGenero" style="float: left; width: 300px;">                          
+                                    <select id="ddlGenero">
+                                        <option value="0">Seleccione</option>
+                                        <option value="1">Femenino</option>
+                                        <option value="2">Masculino</option>
+                                    </select>
+                                    <span id="spanGenero" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                      
+                                </div>  
+                            </div>                             
+                        </td>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Fecha de Nacimiento:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtFechaNacimiento" type="text" value="<?php echo $fechaNacimiento ?>" readonly="readonly" class="form-control" />
+                                    <span id="spanFecha" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
+                                </div>              
+                            </div>                 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Username:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtUsername" type="text" value="" class="form-control" />
+                                    <span id="spanUsername" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
+                                </div>              
+                            </div>                    
+                        </td>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Email:</b></label>
+                                </div>
+                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
+                                    <input id="txtEmail" type="text" value="<?php echo $email ?>" class="form-control" />
+                                    <span id="spanEmail" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
+                                </div>              
+                            </div>                 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div style="float: left;">
+                                    <label><b>Ubicación:</b></label>
+                                </div>
+                                <div class="col-md-3" style="float: left; width: 315px;">
+                                    <?php  
+                                    echo $this->AutoComplete->input( 
+                                        'locations', 
+                                        array( 
+                                            'autoCompleteUrl'=>$this->Html->url(  
+                                                array( 
+                                                    'controller'=>'Registro', 
+                                                    'action'=>'auto_complete', 
+                                                ) 
+                                            ), 
+                                            'autoCompleteRequestItem'=>'autoCompleteText', 
+                                        ) 
+                                    ); 
+                                    ?>
+                                    <span id="spanLocations" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
+                                 </div>              
+                            </div>                 
+                        </td> 
+                        <td>
+                            <div style="float: left;">
+                                <label style="color: transparent;">Botón</label>
+                            </div>                            
+                            <div style="padding: 1em 3em; margin: 1em 25%; ">
+                                <div class="col-md-3" style="float: left; width: 315px;">
+                                    <a class="btn btn-large btn-block btn-inverse" style="height: 42px;" href="javascript:Validar()">Registrar</a>
+                                </div>              
+                            </div>                        
+                        </td>
+                    </tr>
+                </table>
+            </form>            
+        </center>        
+    </div>
+</center>
 
 <div style="clear: both;"></div>
 <div style="clear: both;"></div>
