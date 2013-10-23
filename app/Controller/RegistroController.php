@@ -21,9 +21,17 @@ class RegistroController extends AppController
         }
     }
     
-    public function perfil()
+   public function perfil()
     { 
        $this->layout='paginas'; 
+       
+       if(isset($_SESSION['User']))
+       {
+           $ses_user=$this->Session->read('User');
+           $this->loadModel("User");
+           $Usuario=$this->User->getUser($ses_user['id']);
+           $this->set('Usuariovista',$Usuario);
+       }
     }
     
     public function formulario()

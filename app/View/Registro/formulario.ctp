@@ -110,11 +110,7 @@
     $(document).ready(function() {
 
         var valor = "<?php echo $genero; ?>";
-        $('#ddlGenero').contents(":not(:empty)").first().html(valor);
-        
-        alert($('#ddlGenero').children('.filter-option pull-left').first().html());
-        
-        $('#ddlGenero').children('.filter-option pull-left').html(valor);
+        $('#ddlGenero option:selected').text(valor);
 
         $("#txtFechaNacimiento").datepicker({
               changeMonth: true,
@@ -124,9 +120,6 @@
          });  
          
         $("#locations").addClass("form-control");       
-
-        alert($('#ddlGenero').contents(":not(:empty)").first().text());
-
     });    
        
 </script>
@@ -193,7 +186,7 @@
                             <div style="float: left;">
                                 <label><b>Género:</b></label>
                             </div>                        
-                            <div class="col-md-3" style="float: left; width: 315px;">
+                            <div class="col-md-3" id="divGenero" style="float: left; width: 315px;">
                               <select id="ddlGenero" name="herolist" value="Seleccione" class="select-block">
                                 <option value="0">Seleccione</option>
                                 <option value="1">Femenino</option>
@@ -258,11 +251,21 @@
                                 ?>
                              </div>              
                         </div>                 
-                    </td>                    
+                    </td> 
+                    <td>
+                        <div style="padding: 1em 3em; margin: 1em 25%; ">
+                            <div class="col-md-3" style="float: left; width: 315px;">
+                                <a class="btn btn-primary btn-lg btn-block" href="#">Registrar</a>
+                            </div>              
+                        </div>                        
+                    </td>
                 </tr>
             </table>
         </form>            
     </center>        
 </div>
 
+<div style="clear: both;"></div>
+<div style="clear: both;"></div>
+<div style="clear: both;"></div>
 <div style="clear: both;"></div>
