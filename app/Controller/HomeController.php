@@ -12,7 +12,7 @@ class HomeController extends AppController {
         $this->layout=false;
     }
  
-    function login()
+    public function login()
     {
         $this->layout=false;
         
@@ -32,7 +32,7 @@ class HomeController extends AppController {
         $this->redirect($loginUrl);
     }
  
-    function facebook_connect()
+    public function facebook_connect()
     {
         $this->layout = 'paginas';
         
@@ -64,10 +64,11 @@ class HomeController extends AppController {
                 $usuarioF = $this->Session->read('User');                
 
                 $validar = $this->User->find('first', array('conditions' => array('User.facebookid' => $usuarioF['id'])));
+                $this->Session->write('chequeo',$validar);                
 
-                if(isset($validar['facebookid']))
+                if(isset($validar['User']['facebookid']))
                 {
-                    $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));
+                    $this->redirect(array('controller' => 'Registro', 'action' => 'puente'));
                 } 
             }
             catch(FacebookApiException $e){
@@ -81,7 +82,7 @@ class HomeController extends AppController {
        }
    }
  
-   function facebook_logout(){
+   public function facebook_logout(){
         $this->Session->delete('User');
         $this->Session->delete('logout');
    }   

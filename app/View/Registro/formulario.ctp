@@ -74,37 +74,10 @@
     {
         $email = '';
     }    
-   
-    echo $this->Html->script('views/helpers/auto_complete');    
     echo $this->Html->script('validCampoFranz');  
         
 ?>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <style>
-        .autoCompleteDiv    { 
-             position: absolute; 
-             border: 1px solid #888; 
-             margin: 0px; 
-             padding: 2px; 
-             display: none; 
-             background: white; 
-        } 
-        .autoCompleteDiv a:hover { 
-            background: none; 
-            background-color: darkblue; 
-            color: white; 
-            font-weight: normal; 
-        } 
-        .autoCompleteDiv a { 
-            background: none; 
-            background-color: white; 
-            color: black; 
-            text-decoration: none; 
-            padding: 2px; 
-            margin: 0px; 
-            display: block; 
-        }  
-        
         select#ddlGenero {
         -webkit-appearance: button;
         -webkit-border-radius: 2px;
@@ -123,10 +96,14 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         width: 290px;
-        }       
+        }  
+        
+        .ui-autocomplete-loading {
+          background: white url('../img/ui-anim_basic_16x16.gif') right center no-repeat;
+          padding-right: 3px;
+        }        
         
 </style>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript">
 
     function Validar() 
@@ -134,66 +111,116 @@
         if ($('#txtNombre').val() == "") 
         {
             $("#txtNombre").focus();
-            $("#spanNombre").text('Por favor introduzca un nombre');            
-            $("#spanNombre").css("display","inherit");
-            $('#spanNombre').delay(5000).fadeOut('slow');       
+            $("#txtMensajeError").val('Por favor introduzca un nombre');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
             return false;
         }
         
         if ($('#txtApellido').val() == "") 
         {
             $("#txtApellido").focus();
-            $("#spanApellido").text('Por favor introduzca un apellido');            
-            $("#spanApellido").css("display","inherit");
-            $('#spanApellido').delay(5000).fadeOut('slow');       
+            $("#txtMensajeError").val('Por favor introduzca un apellido');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
             return false;
         }        
 
         if ($("#ddlGenero option:selected").text() == "Seleccione") {
             $("#ddlGenero").focus();
-            $("#spanGenero").text('Por favor seleccione un género');             
-            $("#spanGenero").css("display","inherit");
-            $('#spanGenero').delay(5000).fadeOut('slow');  
+            $("#txtMensajeError").val('Por favor seleccione un género');             
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');  
             return false;
         }
         
         if ($('#txtFechaNacimiento').val() == "") 
         {
-            $("#spanFecha").text('Por favor seleccione una fecha');            
-            $("#spanFecha").css("display","inherit");
-            $('#spanFecha').delay(5000).fadeOut('slow');       
+            $("#txtMensajeError").val('Por favor seleccione una fecha');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
             return false;
         } 
         
         if ($('#txtUsername').val() == "") 
         {
             $("#txtUsername").focus();  
-            $("#spanUsername").text('Por favor introduzca un nombre de usuario');            
-            $("#spanUsername").css("display","inherit");
-            $('#spanUsername').delay(5000).fadeOut('slow');       
+            $("#txtMensajeError").val('Por favor introduzca un nombre de usuario');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
             return false;
         }
         
+        if ($('#txtUsernameValidator').val() == "1") 
+        {
+            $("#txtUsername").focus();  
+            $("#txtMensajeError").val('El nombre de usuario seleccionado ya existe. Por favor introduzca otro ');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
+            return false;
+        }    
+              
         if ($('#txtEmail').val() == "") 
         {
             $("#txtEmail").focus();  
-            $("#spanEmail").text('Por favor introduzca una dirección de correo');            
-            $("#spanEmail").css("display","inherit");
-            $('#spanEmail').delay(5000).fadeOut('slow');       
+            $("#txtMensajeError").val('Por favor introduzca una dirección de correo');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
             return false;
-        }   
+        }
         
-        if ($('#locations').val() == "") 
+        var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;        
+        if (!filter.test($("#txtEmail").val()))
         {
-            $("#locations").focus();  
-            $("#spanLocations").text('Por favor introduzca una ubicación');            
-            $("#spanLocations").css("display","inherit");
-            $('#spanLocations').delay(5000).fadeOut('slow');       
+            $("#txtEmail").focus();  
+            $("#txtMensajeError").val('Por favor introduzca una dirección de correo valida');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
+            return false;            
+        }
+                
+        if ($('#city').val() == "") 
+        {
+            $("#city").focus();  
+            $("#txtMensajeError").val('Por favor introduzca una ubicación');            
+            $("#divMensajeError").css("display","inherit");
+            $('#divMensajeError').delay(2000).fadeOut('slow');       
             return false;
-        }        
-        
+        } 
+
         return true;
     }
+    
+    function Registrar() 
+    {
+        if(Validar())
+        {
+            $.ajax({
+                    url:   '/UCABsocial/Registro/registrarUsuario?nombre='+$("#txtNombre").val()+'&nombreDos='+$("#txtNombreDos").val()+'&apellido='+$("#txtApellido").val()+'&apellidoDos='+$("#txtApellidoDos").val()+'&genero='+$("#ddlGenero option:selected").text()+'&fecha='+$("#txtFechaNacimiento").val()+'&username='+$("#txtUsername").val()+'&correo='+$("#txtEmail").val()+'&ubicacion='+$("#city").val(),
+                    type:  'post',
+                    success:  function (response) {
+                        if(resultado.indexOf("0") != -1)
+                        {
+                            $("#txtUsernameValidator").val('0');                                                          
+                            $("#txtMensaje").val('Username disponible');            
+                            $("#divMensaje").css("display","inherit");                                
+                            $('#divMensaje').delay(2000).fadeOut('slow');                                   
+                        }
+                        else
+                        {                             
+                            $("#txtMensajeError").val('El username ya existe'); 
+                            $("#txtUsernameValidator").val('1');                                 
+                            $("#divMensajeError").css("display","inherit");
+                            $('#divMensajeError').delay(2000).fadeOut('slow');                                 
+                        }                            
+                    }
+            });            
+        }
+    }    
+
+    function log( message ) {
+          $( "#log" ).scrollTop( 0 );
+        }
 
     $(document).ready(function() {
 
@@ -208,41 +235,82 @@
               dateFormat: 'dd-mm-yy'              
          });  
          
-        $("#locations").addClass("form-control");     
+        $("#city").addClass("form-control");     
         
         $('#txtNombre').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');
         $('#txtNombreDos').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');
         $('#txtApellido').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');
         $('#txtApellidoDos').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');   
-        $('#locations').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou');           
+        $('#city').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou'); 
+        $('#txtUsername').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.'); 
+        $('#txtEmail').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.@');         
         //$('#miCampo2').validCampoFranz('0123456789'); 
         
         $("#txtUsername").focusout(function() {
                 var username = $("#txtUsername").val();
-
-                $.ajax({
-                        url:   '/UCABsocial/Registro/validateUsername?username='+username,
-                        type:  'post',
-                        success:  function (response) {
-                            var resultado = response;
-                            alert(resultado);
-                            if(resultado == "1")
-                            {
-                                $("#spanUsername").css("color","Green"); 
-                                $("#spanUsername").text('Username disponible');            
-                                $("#spanUsername").css("display","inherit"); 
-                                $('#spanUsername').delay(7000).fadeOut('slow');                                  
+                if(username != "")
+                {
+                    $.ajax({
+                            url:   '/UCABsocial/Registro/validateUsername?username='+username,
+                            type:  'post',
+                            success:  function (response) {
+                                var resultado = response;
+                                if(resultado.indexOf("0") != -1)
+                                {
+                                    $("#txtUsernameValidator").val('0');                                                          
+                                    $("#txtMensaje").val('Username disponible');            
+                                    $("#divMensaje").css("display","inherit");                                
+                                    $('#divMensaje').delay(2000).fadeOut('slow');                                   
+                                }
+                                else
+                                {                             
+                                    $("#txtMensajeError").val('El username ya existe'); 
+                                    $("#txtUsernameValidator").val('1');                                 
+                                    $("#divMensajeError").css("display","inherit");
+                                    $('#divMensajeError').delay(2000).fadeOut('slow');                                 
+                                }                            
                             }
-                            if(resultado == "0")
-                            {
-                                $("#spanUsername").css("color","Red"); 
-                                $("#spanUsername").text('El username ya existe');            
-                                $("#spanUsername").css("display","inherit");
-                                $('#spanUsername').delay(7000).fadeOut('slow');                                
-                            }                            
-                        }
+                    });
+                }
+        });
+
+        $( "#city" ).autocomplete({
+              source: function( request, response ) {
+                $.ajax({
+                  url: "http://ws.geonames.org/searchJSON",
+                  dataType: "jsonp",
+                  data: {
+                    featureClass: "P",
+                    style: "full",
+                    maxRows: 12,
+                    name_startsWith: request.term
+                  },
+                  success: function( data ) {
+                    response( $.map( data.geonames, function( item ) {
+                      return {
+                        label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + " - " + item.countryName,
+                        value: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + " - " + item.countryName
+                      }
+                    }));
+                  }
                 });
-        });       
+              },
+              minLength: 3,
+              change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#city").val("");
+                 }
+              },    
+              select: function(event, ui ) {
+                log( ui.item.label);
+              },
+              open: function() {
+                $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+              },
+              close: function() {
+                $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+              }
+            });
         
     });    
        
@@ -258,156 +326,121 @@
     </div>
 </center>
 
-<div class="login-icon" style="padding-left: 25px; margin-left: 130px;">
-  <img src="../img/login/smile.png" alt="UCABsocial" />
-  <h4>Registro <small>UCABsocial</small></h4>
-</div>
-<center>
-    <div id="formRegistro" class="login-form" style="text-align: center; width: 50%; left: 0;" >
-        <center>
+<div class="register">
+    <div class="register-screen">
+        <div class="register-icon" >
+          <img src="../img/login/smile.png" alt="UCABsocial" />
+          <h4>Registro <small>UCABsocial</small></h4>
+        </div>
+        <div class="login-form" style="width: 100%;">
             <form>
-                <table>
-                    <tr>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Nombre:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtNombre" type="text" value="<?php echo $primerNombre ?>" class="form-control" />
-                                    <span id="spanNombre" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>
-                                </div>              
-                            </div>                
-                        </td>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Segundo Nombre:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtNombreDos" type="text" value="<?php echo $segundoNombre ?>" class="form-control" />                                    
-                                </div>              
-                            </div>                
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Apellido:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtApellido" type="text" value="<?php echo $primerApellido ?>" class="form-control" />
-                                    <span id="spanApellido" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                      
-                                </div>              
-                            </div>                
-                        </td>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Segundo Apellido:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtApellidoDos" type="text" value="<?php echo $segundoApellido ?>" class="form-control" />                                     
-                                </div>              
-                            </div>                 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">                       
-                                <div style="float: left;">
-                                    <label><b>Género:</b></label>
-                                </div>                        
-                                <div class="col-md-3" id="divGenero" style="float: left; width: 300px;">                          
-                                    <select id="ddlGenero">
-                                        <option value="0">Seleccione</option>
-                                        <option value="1">Femenino</option>
-                                        <option value="2">Masculino</option>
-                                    </select>
-                                    <span id="spanGenero" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                      
-                                </div>  
-                            </div>                             
-                        </td>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Fecha de Nacimiento:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtFechaNacimiento" type="text" value="<?php echo $fechaNacimiento ?>" readonly="readonly" class="form-control" />
-                                    <span id="spanFecha" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
-                                </div>              
-                            </div>                 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Username:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtUsername" type="text" value="" class="form-control" />
-                                    <span id="spanUsername" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
-                                </div>              
-                            </div>                    
-                        </td>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Email:</b></label>
-                                </div>
-                                <div class="form-group" style="float: left; width: 300px; padding-left: 8px;">
-                                    <input id="txtEmail" type="text" value="<?php echo $email ?>" class="form-control" />
-                                    <span id="spanEmail" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
-                                </div>              
-                            </div>                 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div style="float: left;">
-                                    <label><b>Ubicación:</b></label>
-                                </div>
-                                <div class="col-md-3" style="float: left; width: 315px;">
-                                    <?php  
-                                    echo $this->AutoComplete->input( 
-                                        'locations', 
-                                        array( 
-                                            'autoCompleteUrl'=>$this->Html->url(  
-                                                array( 
-                                                    'controller'=>'Registro', 
-                                                    'action'=>'auto_complete', 
-                                                ) 
-                                            ), 
-                                            'autoCompleteRequestItem'=>'autoCompleteText', 
-                                        ) 
-                                    ); 
-                                    ?>
-                                    <span id="spanLocations" style="color: red; display: none; padding-left: 8px; padding-top: 3px;"></span>                                    
-                                 </div>              
-                            </div>                 
-                        </td> 
-                        <td>
-                            <div style="float: left;">
-                                <label style="color: transparent;">Botón</label>
-                            </div>                            
-                            <div style="padding: 1em 3em; margin: 1em 25%; ">
-                                <div class="col-md-3" style="float: left; width: 315px;">
-                                    <a class="btn btn-large btn-block btn-inverse" style="height: 42px;" href="javascript:Validar()">Registrar</a>
-                                </div>              
-                            </div>                        
-                        </td>
-                    </tr>
-                </table>
-            </form>            
-        </center>        
+                <div style="width: 100%; padding-bottom: 2%;">
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Nombre:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtNombre" type="text" value="<?php echo $primerNombre ?>" class="form-control" />
+                        </div>
+                    </div>
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Segundo Nombre:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtNombreDos" type="text" value="<?php echo $segundoNombre ?>" class="form-control" /> 
+                        </div>
+                    </div>                    
+                </div>
+                <div style="width: 100%; padding-top: 2%; padding-bottom: 2%;">
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Apellido:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtApellido" type="text" value="<?php echo $primerApellido ?>" class="form-control" />
+                        </div>
+                    </div>
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Segundo Apellido:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtApellidoDos" type="text" value="<?php echo $segundoApellido ?>" class="form-control" />  
+                        </div>
+                    </div>                    
+                </div> 
+                <div style="width: 100%; padding-top: 2%; padding-bottom: 2%;">
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Género:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <select id="ddlGenero" style="width: 100%;">
+                                <option value="0">Seleccione</option>
+                                <option value="1">Femenino</option>
+                                <option value="2">Masculino</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Fecha de Nacimiento:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtFechaNacimiento" type="text" value="<?php echo $fechaNacimiento ?>" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>                    
+                </div>
+                <div style="width: 100%; padding-top: 2%; padding-bottom: 2%;">
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Username:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtUsername" type="text" value="" class="form-control" />
+                            <input id="txtUsernameValidator" type="text" value="0" style="display: none;" />                            
+                        </div>
+                    </div>
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Correo Electrónico:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="txtEmail" type="text" value="<?php echo $email ?>" class="form-control" />                                   
+                        </div>
+                    </div>                    
+                </div>  
+                <div style="width: 100%; padding-top: 2%; padding-bottom: 2%;">
+                    <div style="float: left; width: 50%">                    
+                        <div style="float: left; width: 25%">
+                            <label><b>Ubicación:</b></label>
+                        </div> 
+                        <div style="float: left; width: 50%">
+                            <input id="city" class="form-control"/>
+                        </div>
+                    </div>
+                    <div style="float: left; width: 50%; text-align: center;"> 
+                        <a class="btn btn-large btn-block btn-inverse" style="height: 41px; width: 50%; margin-left: 15%;" href="javascript:Registrar()">Registrar</a>                        
+                    </div>                    
+                </div>                
+            </form> 
+            <div id="divMensaje" class="form-group has-success" style="display: none; padding-top: 2%;">
+                <input id="txtMensaje" type="text" value="" class="form-control" readonly="readonly"/>
+            </div>  
+            <div id="divMensajeError" class="form-group has-error" style="display: none; padding-top: 2%;">
+                <input id="txtMensajeError" type="text" value="" class="form-control" readonly="readonly"/>
+            </div>              
+        </div>
     </div>
-</center>
+</div>
 
 <div style="clear: both;"></div>
 <div style="clear: both;"></div>
 <div style="clear: both;"></div>
 <div style="clear: both;"></div>
+
+<div class="ui-widget" style="margin-top: 2em; font-family: Arial; display: none;">
+  Result:
+  <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+</div>

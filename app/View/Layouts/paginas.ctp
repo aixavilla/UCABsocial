@@ -8,14 +8,15 @@
 	<title>
 		<?php echo $cakeDescription ?>
 	</title>
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />    
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />   
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+         <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+         <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>        
 	<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('bootstrap');                 
 		echo $this->Html->css('flat-ui'); 
 		echo $this->Html->css('demo');                 
-                echo $this->Html->script('jquery-1.8.3.min');
-                echo $this->Html->script('jquery-ui-1.10.3.custom.min');
                 echo $this->Html->script('jquery.ui.touch-punch.min');
                 echo $this->Html->script('bootstrap.min');
                 echo $this->Html->script('bootstrap-select');

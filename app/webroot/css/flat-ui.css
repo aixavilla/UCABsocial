@@ -3234,6 +3234,7 @@ body.vjs-full-window {
   padding: 24px 23px 20px;
   position: relative;
   border-radius: 6px;
+  min-height: 300px;
 }
 .login-form:before {
   content: '';
@@ -3547,4 +3548,34 @@ footer p {
 .mhl,
 .mal {
   margin-left: 20px;
+}
+.register {
+  position: relative;
+}
+.register-screen {
+  padding: 0px 35px 10px 350px;
+}
+.register-icon {
+  left: 200px;
+  position: absolute;
+  top: 50px;
+  width: 100px;
+}
+.register-icon > img {
+  display: block;
+  margin-bottom: 6px;
+  width: 100%;
+}
+.register-icon > h4 {
+  font-size: 17px;
+  font-weight: 200;
+  line-height: 34px;
+  opacity: 0.95;
+  filter: alpha(opacity=95);
+}
+.register-icon > h4 small {
+  color: inherit;
+  display: block;
+  font-size: inherit;
+  font-weight: 700;
 }

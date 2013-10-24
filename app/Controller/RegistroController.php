@@ -2,7 +2,6 @@
 
 class RegistroController extends AppController 
 {
- 
     public function index()
     {
         $this->layout='paginas';
@@ -20,6 +19,11 @@ class RegistroController extends AppController
              $this->redirect(array('action' => 'perfil'));
         }
     }
+    
+    public function puente()
+    { 
+        
+    }     
     
    public function perfil()
     { 
@@ -59,12 +63,46 @@ class RegistroController extends AppController
     {
         $this->loadModel("User");  
         $consulta = $this->User->validateUsername($this->params['url']['username']);
-                $this->Session->write('validaaate',$consulta);
-        $this->set('respuesta', $consulta);                 
+        if(isset($consulta[0]))
+        {
+            $response = 1;
+        }
+        else 
+        {
+            $response = 0;
+        }
+        $this->set('respuesta', $response);                 
         $this->layout = 'ajax'; 
         
     }     
     
+    function registrarUsuario() 
+    {
+        $atributos = array(
+            0 => $this->params['url']['nombre'],
+            1 => $this->params['url']['nombreDos'],
+            2 => $this->params['url']['apellido'],
+            3 => $this->params['url']['apellidoDos'],
+            4 => $this->params['url']['genero'],  
+            5 => $this->params['url']['fecha'],
+            6 => $this->params['url']['username'],
+            7 => $this->params['url']['correo'],   
+            8 => $this->params['url']['ubicacion']              
+        );
+        
+        $this->loadModel("User");  
+        $consulta = $this->User->registrarUsuario($atributos);
+        if(isset($consulta[0]))
+        {
+            $response = 1;
+        }
+        else 
+        {
+            $response = 0;
+        }
+        $this->set('respuesta', $response);                 
+        $this->layout = 'ajax'; 
+        
+    }        
 }
-
 ?>

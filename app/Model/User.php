@@ -12,7 +12,7 @@
 
         public function validateUsername($variable)
         {
-            return $this->query("SELECT id from users where username = ".$variable.";");
+            return $this->query("SELECT id from users where username = '".$variable."';");
         }    
 
     }

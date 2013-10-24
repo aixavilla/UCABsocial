@@ -74,6 +74,12 @@ class PagesController extends AppController {
 			}
 			throw new NotFoundException();
 		}
+                
+                if(isset($_SESSION['User']))
+                {
+                    $ses_user=$this->Session->read('User');
+                    $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));
+                }                 
 	}
         
         public function terminos() 

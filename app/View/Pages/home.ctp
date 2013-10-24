@@ -37,7 +37,7 @@
               <h4>Bienvenido a <small>UCABsocial</small></h4>
             </div>
 
-              <div class="login-form">
+              <div class="login-form" style="min-height: 150px;">
 <!--                <div class="form-group">
                   <input type="text" class="form-control login-field" value="" placeholder="Username" id="login-name" />
                   <label class="login-field-icon fui-user" for="login-name"></label>
