@@ -4,6 +4,8 @@ class PerfilController extends AppController{
 
     public function index()
     {
+        /*Funcion que nos permite observar el index de los amigos de un usuario con el
+         App::import('Controller', 'Friends') hacemos una referencia a la clase index*/
        if(isset($_SESSION['User']))
        {
            $this->layout='paginas'; 
@@ -54,7 +56,9 @@ class PerfilController extends AppController{
     } 
     
     public function amigosGrafo($arregloIdFriends)
-    {         
+    {       
+        /*Funcion que nos retorna un arreglo ($amigosGrafo[]),con los id de un usuario en especifico
+         haciendo una referencia al modelo User a la funcion nombreAmigos*/
         $amigosGrafo=array();
         $this->loadModel("User");
         foreach($arregloIdFriends as $amigos2)

@@ -47,6 +47,7 @@ class PagesController extends AppController {
  *	or MissingViewException in debug mode.
  */
 	public function display() {
+            /*Funcion que nos redirecciona a la pagina de inicio*/
 		$path = func_get_args();
 
 		$count = count($path);
@@ -84,6 +85,8 @@ class PagesController extends AppController {
         
         public function terminos() 
         {
+            /*Nos muestra los terminos y condiciones para poder autenticar al usuario una vez aceptados los 
+             * mismos*/
             $this->layout='paginas'; 
             
         }

@@ -4,6 +4,8 @@ class RegistroController extends AppController
 {
     public function index()
     {
+        /*Funcion que valida si ya estas registrado para enviar a la pagina de perfil, de no estar registrado
+         *  el usuario nos redirige a formulario*/
         if(!isset($_SESSION['User']))
         {
             $this->redirect(array('controller' => 'Pages', 'action' => 'display'));           
@@ -25,6 +27,7 @@ class RegistroController extends AppController
     
     public function puente()
     { 
+        /*Funcion que nos permite redireccionar */
        if(!isset($_SESSION['User']))
        {
             $this->redirect(array('controller' => 'Pages', 'action' => 'display'));           
@@ -33,6 +36,8 @@ class RegistroController extends AppController
     
    public function perfil()
    { 
+       /*$_SEESSION evaluamos una variable de seccion y con el isset verificamos que esta variable este 
+        * inicializada y no sea nula para poder cargar los datos del perfil de usuario*/
        if(isset($_SESSION['User']))
        {
            $this->layout='paginas'; 
@@ -41,7 +46,7 @@ class RegistroController extends AppController
            $Usuario=$this->User->getUser($ses_user['id']);
            $this->Session->write('usernameConectado', $Usuario[0]['users']['username']);           
            $this->set('Usuariovista',$Usuario);
-           
+         /* Una vez el usuario este autenticado cargamos los amigos del mismo, desde el controlador Friends*/
            App::import('Controller', 'Friends');
            $amigos = new FriendsController;
            $amigosvista = $amigos->listarAmigos($Usuario[0]['users']['id']); 
@@ -62,7 +67,8 @@ class RegistroController extends AppController
             $amigosGrafo = $this->amigosGrafo($amigosFinal);
             $this->Session->write('amigosG',$amigosGrafo); 
             $this->set('amigosGrafo2',$amigosGrafo);
-            
+            /*Cargar solicitudes de nuevas amistades del usuario registrado, creando luego de recorrer el arreglo $solicitudvista,
+             *  un arreglo final $solicitudesGrafo con todas las solcitudes validadas*/
            $solicitudesvista = $amigos->listarSolicitudes($Usuario[0]['users']['id']);
            
            $solicitudes = array();
@@ -96,6 +102,7 @@ class RegistroController extends AppController
     
     public function formulario()
     { 
+        /*Muestra todos los campos que se necesitan para registrar los usuarios en la base de datos*/
        if(isset($_SESSION['User']))
        { 
             $this->layout='paginas';             
@@ -108,6 +115,8 @@ class RegistroController extends AppController
     
     public function editarForm()
     { 
+        /*Funcion que nos permite al usuario editar los datos de su perfil, invocando 
+         * la funcion getuser del modelo User*/
        if(isset($_SESSION['User']))
        { 
            $this->layout='paginas';   
@@ -125,6 +134,8 @@ class RegistroController extends AppController
     
     function auto_complete() 
     {
+        /*funcion que nos permite en el buscador listar todos los usuarios, usando ajax para los url a la hora de hacer click en el nombre 
+         * de un amigo y se nos redirija al perfil del mismo*/
         $this->loadModel("User");  
         $terms = $this->User->getNombresUsuarios($this->params['url']['autoCompleteText']);       
  
@@ -141,6 +152,7 @@ class RegistroController extends AppController
     
     function amigos()
     {
+        /*Invocando al modelo User obtenemos otra lista de los restultados del auto_complete*/
         $this->layout='paginas';          
         $this->loadModel("User");  
         $terms = $this->User->getNombresUsuarios($this->params['url']['search']);       
@@ -150,6 +162,8 @@ class RegistroController extends AppController
     
     function validateUsername() 
     {
+        /*Se valida el username del usuario invocando en el modelo User la funcion validateUsername, 
+         * permitiendonos ver si ese username se encuentra disponible, o ya pertenece a otro usuario*/
         $this->loadModel("User");  
         $consulta = $this->User->validateUsername($this->params['url']['username']);
         if(isset($consulta[0]))
@@ -167,6 +181,7 @@ class RegistroController extends AppController
     
     function registrarUsuario() 
     {
+      
         $ses_user=$this->Session->read('User');
         $atributos = array(
             0 => $this->params['url']['nombre'],
@@ -235,7 +250,7 @@ class RegistroController extends AppController
     
     public function amigosGrafo($arregloIdFriends)
     {         
-
+        //Retorna un arreglo de amigos de un usuario en especifico $amigosgrafo[]
         $amigosGrafo=array();
         $this->loadModel("User");
         foreach($arregloIdFriends as $amigos2)

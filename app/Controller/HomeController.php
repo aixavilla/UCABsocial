@@ -9,11 +9,13 @@ class HomeController extends AppController {
     public $uses=array();
  
     public function index(){
+        //Controlador index, para que muestre la vista index
         $this->layout=false;
     }
  
     public function login()
     {
+        /*login de facebook, nos conectamos a traves de oauth*/
         $this->layout=false;
         
         Configure::load('facebook');
@@ -34,6 +36,8 @@ class HomeController extends AppController {
  
     public function facebook_connect()
     {
+        /*Autenticar la session de facebook, valida las credenciales del  usuario de facebook, 
+         * devuelve el token de session y el id de usuario de facebook, entre otros atributos*/
         $this->layout = 'paginas';
         
         Configure::load('facebook');
@@ -83,6 +87,7 @@ class HomeController extends AppController {
    }
  
    public function facebook_logout(){
+       /*Funcion que desconecta de facebook y borra la variable de session*/
         $this->Session->delete('User');
         $this->Session->delete('logout');
         session_unset();

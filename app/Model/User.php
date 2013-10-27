@@ -32,6 +32,7 @@
         
         public function getNombresUsuarios($variable)
         {
+            /*Busca los usuarios registrados en la red social segun un rango de campos especificos por el usuario registrado*/
         return $this->query("SELECT U.ID, U.nombre, U.nombre2, U.apellido, U.apellido2, U.username FROM Users U WHERE 
        (U.nombre LIKE '%".$variable."%' OR U.nombre2 LIKE '%".$variable."%' OR U.apellido LIKE '%".$variable."%' OR apellido2 LIKE '%".$variable."%');");
         }        

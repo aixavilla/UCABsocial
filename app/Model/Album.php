@@ -5,7 +5,9 @@
     
         public function listarAlbums($variable)
         {
-            return $this->query("SELECT * FROM albums where (fkUsers = ".$variable.");");       
+            /**/
+            return $this->query("SELECT * FROM albums where (fkUsers = ".$variable.");");
+          
         }
         
         

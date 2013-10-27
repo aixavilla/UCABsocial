@@ -25,10 +25,17 @@
             }
         }
 
-        public function eliminarAmigo($variable,$variable2)
-        {
-            $this->query("delete from friends where (fkUsers = ".$variable." and  fkUsers2 = ".$variable2.") or (fkUsers2 = ".$variable." and  fkUsers = ".$variable2.");");       
-        }
+       public function eliminarAmigo($variable,$variable2)
+       {
+           $consulta = ($this->query("select id from friends where ((fkUsers = ".$variable." and  fkUsers2 = ".$variable2.") or (fkUsers2 = ".$variable." and  fkUsers = ".$variable2."));"));
+           
+           if(isset($consulta[0]['friends']['id']))
+           {
+               $this->query("delete from friends where (fkUsers = ".$variable." and  fkUsers2 = ".$variable2.") or (fkUsers2 = ".$variable." and  fkUsers = ".$variable2.");");
+           }
+           else
+               return 1;
+       }
         
     }
 ?>

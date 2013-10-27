@@ -4,6 +4,8 @@ class AlbumsController extends AppController
 {
     public function listarAlbums($variable)
     {
+        /*Funcion que nos retorna un arreglo con todos los albums del usuario. 
+        $variable lo obtenemos del valor que retorna el query del modelo album*/
         $this->loadModel("Album");
         $album = $this->Album->listarAlbums($variable);
         return $album;  
@@ -12,6 +14,9 @@ class AlbumsController extends AppController
     
     public function registrar() 
     {
+        /*Funcion que usamos para crear un nuevo album.
+        $atributos lo obtenemos en el modelo album, funcion "agregarNuevoAlbum". 
+         * Los URL vienen de la funcion ajax de javascript*/
         $atributos = array(
             0 => $this->params['url']['nombre'],
             1 => $this->params['url']['privacidad'],
@@ -37,6 +42,11 @@ class AlbumsController extends AppController
     
     public function eliminarAlbum()
     {
+        /*Con esta funcion el usuario puede eliminar un album.
+        El eliminarAlbum, funcion que se emplea en el modelo Album, nos retorna 
+         * los valores con los que podremos realizar la eliminacion del mismo.
+         Los URL vienen de la funcion ajax de javascript*/
+        
         $atributos = array(
             0 => $this->params['url']['fkUsers'],
             1 => $this->params['url']['nombre'],
