@@ -5,7 +5,7 @@ $(document).ready(function(){
          
         var updateDiv = '#'+$(this).attr('update'); 
         $(updateDiv).css('minWidth',$(this).width()); 
-        $(updateDiv).css('height','200px'); 
+        $(updateDiv).css('height','auto'); 
         $(updateDiv).css('overflow','auto');         
         var autoCompleteRequestItem = $(this).attr('autoCompleteRequestItem'); 
         // Add a function to key up 
@@ -44,16 +44,25 @@ $(document).ready(function(){
             }else{ 
                 $(updateDiv).hide(); 
             } 
-        }); 
-    }); 
+        });
+        
+        $(updateDiv).focusout(function(){
+          $(this).hide();
+        });
+    });
      
     function populateAutoComplete(itemList,updateDiv) {   
         var tag = updateDiv.substring(1); 
         // Build a list of links from the terms, set href equal to the term 
-        var options = ''; 
+        var options = '<table>'; 
         $.each(itemList, function(index, name) { 
-              options += '<a autoCompleteItem='+tag+' href="'+name+'" >' +  name + '</a>'; 
-            }); 
+              var arrStr = name.split(/[+]/);
+              options += "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/facebook350.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a autoCompleteItem='"+tag+"' href='/UCABsocial/Perfil/index?user="+arrStr[1]+"'>"+arrStr[0]+"<a></td></tr>";
+              //options += '<a autoCompleteItem='+tag+' href="'+name+'" >' +  name + '</a>'; 
+            });
+            options += '</table>';
+            var valor = $('#locations').val();
+            options += '<center><a href="/UCABsocial/Registro/amigos?search='+valor+'">Ver más resultados<a></center>';
         // Show them or hide div if nothing to show 
         if(options!=''){ 
             $(updateDiv).html(options); 
@@ -61,12 +70,6 @@ $(document).ready(function(){
         } else { 
             $(updateDiv).hide(); 
         } 
-        // Attach a function to click to transfer value to the text box 
-        $('a[autoCompleteItem='+tag+']').click(function(){ 
-            $('input[update='+tag+']').val( $(this).attr('href')); 
-            $('input[update='+tag+']').focus();
-            $(updateDiv).hide();           
-            return false; 
-        }); 
+        // Attach a function to click to transfer value to the text box  
     } 
 }); 

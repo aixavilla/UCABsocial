@@ -1,13 +1,8 @@
 <?php
 
-    if(isset($Usuariovista[0]['users']['id']))
-    {
-        $idUserP = $Usuariovista[0]['users']['id'];        
-    }
-    else 
-    {
-        $idUserP = '';
-    }
+    $usernameConectado = $this->Session->read('usernameConectado');
+    $usuario_session = $this->Session->read('User');
+    $usuario_Valores = $this->Session->read('chequeo');
 
     if(isset($Usuariovista[0]['users']['nombre']))
     {
@@ -206,7 +201,7 @@
             background: -webkit-gradient(linear, left top, left bottom, 
             color-stop(0%, white), color-stop(15%, white), color-stop(100%, #D7E9F5)); 
             background: -moz-linear-gradient(top, white 0%, white 55%, #D5E4F3 130%); 
-        }      
+        }    
         
         .autoCompleteDiv    { 
              position: absolute; 
@@ -230,78 +225,86 @@
             padding: 2px; 
             margin: 0px; 
             display: block; 
-        } 
-        
-        select#ddlPrivacidadAlbum {
-        -webkit-appearance: button;
-        -webkit-border-radius: 2px;
-        -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-        -webkit-padding-end: 20px;
-        -webkit-padding-start: 2px;
-        -webkit-user-select: none;
-        background-image: url(../img/icon-selectbox.png), -webkit-linear-gradient(#1ABC9C, #1ABC9C 40%, #1ABC9C);
-        background-position: 97% center;
-        background-repeat: no-repeat;
-        border: 1px solid #AAA;
-        color: #ffff;
-        font-size: inherit;
-        overflow: hidden;
-        padding: 8px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 290px;
-        }          
+        }         
         
 </style>
 <script>
     
-    function AbrirDialogo()
+    function Perfil()
     {
-        $("#dialog-message").dialog("open");                                                                             
+        <?php $idUsuario = $usuario_session['id']; ?>
+        var url = "<?php echo $idUsuario; ?>";        
+        location.href = '/UCABsocial/Registro/Index?idUsuario='+url;
     }
     
-    function AgregarAlbum() 
+    function AbrirEliminar()
     {
-        if($("#txtNombreAlbum").val() == "")
-        {
-            var today = new Date();
-            var nombreAlbum = "Album (" + today + ")";
-        }
-         
-        var valor = "<?php echo $idUserP; ?>";         
+        $("#spanMensajeDialogoConfirmacion").html('Realmente desea eliminar al usuario de sus amigos?');         
+        $("#dialog-eliminar").dialog("open");         
+    }
+    
+    function AbrirAgregar()
+    {
+        $("#spanMensajeDialogoConfirmacionA").html('Realmente desea agregar al usuario a sus amigos?');         
+        $("#dialog-agregar").dialog("open");         
+    }
+    
+    function Agregar()
+    {
+        var friendCode = "<?php echo $Usuariovista[0]['users']['id']; ?>"; 
+        var perfilCode = "<?php echo $usuario_Valores['User']['id'] ?>";
           
         $.ajax({
-                url:   '/UCABsocial/Albums/registrar?nombre='+$("#txtNombreAlbum").val()+'&privacidad='+$("#ddlPrivacidadAlbum option:selected").text()+"&fkUsers="+valor,
+                url:   '/UCABsocial/Friends/registrarAmigo?fkUsers='+friendCode+'&fkUsers2='+perfilCode,
                 type:  'post',
                 success:  function (response) {
                     var resultado = response;
-                    if(resultado.indexOf("Fallo") != -1)
+                    if(resultado.indexOf("0") != -1)
                     {                        
-                        $("#redirectUrl").val('/UCABsocial/Pages/display');
                         $("#spanMensajeDialogo").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente'); 
-                        location.href = "/UCABsocial/Pages/display";
+                        $("#dialog-message").dialog("open");                          
                     }
                     else
                     {                                                              
-                        $("#redirectUrl").val("/UCABsocial/Registro/perfil");
-                        $("#spanMensajeDialogo").html('Se ha registrado exitosamente el nuevo Album')                            
-                        location.href = "/UCABsocial/Registro/Perfil";
+                        $("#spanMensajeDialogo").html('Solicitud de amistad enviada. El usuario debe aprobarla para comenzar a ser amigos.');
+                        $("#dialog-message").dialog("open");                          
                     }                            
                 }
-        });            
+        });
+    }    
+    
+    function Eliminar()
+    {
+        var friendCode = "<?php echo $Usuariovista[0]['users']['id']; ?>"; 
+        var perfilCode = "<?php echo $usuario_Valores['User']['id'] ?>";
+          
+        $.ajax({
+                url:   '/UCABsocial/Friends/eliminarAmigoGrafo?fkUsers='+friendCode+'&fkUsers2='+perfilCode,
+                type:  'post',
+                success:  function (response) {
+                    var resultado = response;
+                    if(resultado.indexOf("0") != -1)
+                    {                        
+                        $("#spanMensajeDialogo").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente'); 
+                        $("#dialog-message").dialog("open");                          
+                    }
+                    else
+                    {                                                              
+                        $("#spanMensajeDialogo").html('El usuario ha sido removido de su lista de amigos');
+                        $("#dialog-message").dialog("open");                          
+                    }                            
+                }
+        });
     }    
     
   $(function() {
       
-        var username = "<?php echo $usernameUsuario; ?>";
-        $("#usernameConectado").val(username);        
-      
-        $("#locations").addClass("todo-search-field"); 
-        $('#locations').attr('placeholder', 'Buscar personas');
-      
         $( "#accordion" ).accordion({
            heightStyle: "content"
          });
+        
+        $("#locations").addClass("todo-search-field"); 
+        $('#locations').attr('placeholder', 'Buscar personas');        
 
         $("#togglePerfil").click(function() {
                 $(".dropdown").removeClass("open");            
@@ -330,23 +333,54 @@
 
         $('#dropdownSolicitudes').click(function(event){
                 event.stopPropagation();
-        }); 
-        
-        $( "#dialog-message" ).dialog({
-          modal: true,
-          autoOpen: false, 
-          width: 600,
-          height: 300,              
-          buttons: {
-            Agregar: function() {
-              $(this).dialog( "close" );
-              AgregarAlbum();
-            }
-          }
         });         
         
-//        $('#locations').focusout(function() {
-//                $('#locations').val('');
+        $( "#dialog-agregar" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 400,
+          height: 400,              
+          buttons: {
+            Si: function() {
+              Agregar();
+              $(this).dialog( "close" );
+            },
+            No: function() {
+              $(this).dialog( "close" );
+            }                  
+          }
+        });           
+        
+        $( "#dialog-eliminar" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 400,
+          height: 400,              
+          buttons: {
+            Si: function() {
+              Eliminar();
+              $(this).dialog( "close" );
+            },
+            No: function() {
+              $(this).dialog( "close" );
+            }                  
+          }
+        }); 
+        
+            $( "#dialog-message" ).dialog({
+              modal: true,
+              autoOpen: false, 
+              width: 400,
+              height: 400,              
+              buttons: {
+                Aceptar: function() {
+                  $(this).dialog( "close" );
+                  location.reload();
+                }
+              }
+            });         
+        
+//        $('#autoCompleteDiv').focusout(function() {
 //                $('#autoCompleteDiv').hide();
 //        });         
     
@@ -362,21 +396,20 @@
         </ul>
         <div class="todo-search" style="width:300px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
 <!--            <input class="todo-search-field" type="search" value="" placeholder="Buscar personas"  />-->
-<!--            <input name="data[locations]" update="autoCompleteDiv" autocompletetext="1" autocompleteurl="/UCABsocial/Registro/auto_complete" autocompleterequestitem="autoCompleteText" type="text" id="locations">-->
-                <?php  
-                    echo $this->AutoComplete->input( 
-                        'locations', 
-                        array( 
-                            'autoCompleteUrl'=>$this->Html->url(  
-                                array( 
-                                    'controller'=>'Registro', 
-                                    'action'=>'auto_complete', 
-                                ) 
-                            ), 
-                            'autoCompleteRequestItem'=>'autoCompleteText', 
-                        ) 
-                    ); 
-                ?>            
+            <?php  
+                echo $this->AutoComplete->input( 
+                    'locations', 
+                    array( 
+                        'autoCompleteUrl'=>$this->Html->url(  
+                            array( 
+                                'controller'=>'Registro', 
+                                'action'=>'auto_complete', 
+                            ) 
+                        ), 
+                        'autoCompleteRequestItem'=>'autoCompleteText', 
+                    ) 
+                ); 
+            ?>             
         </div>
         <div id="dropdownPerfil" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 50px">
                 <a id="togglePerfil" class="dropdown-toggle" href="#"><span class="fui-gear" ></span></a>
@@ -385,23 +418,13 @@
 		    <li><a href="<?php echo $logout; ?>">Salir</a></li>
 		</ul>
 	</div>
-        <a href="#"><span style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <?php echo $usernameUsuario; ?></span></a>        
+        <a href="javascript:Perfil();"><span id="spanUsername" style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <?php echo $usernameConectado; ?> </span></a>        
         <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
                 <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
                 <ul class="dropdown-menu" style="border: 1px solid black;">
-                    <?php 
-                        if(count($solicitudesGrafo)>0)
-                        {
-                            foreach($solicitudesGrafo as $solicitud)
-                            {
-                                echo "<li><table><tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/facebook350.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$solicitud[0]['users']['username']."'>".$solicitud[0]['users']['nombre']." ".$solicitud[0]['users']['apellido']."<a></td></tr></table></li>";
-                            }
-                        }
-                        else 
-                        {
-                            echo "<li><table><tr><td style='padding-top: .5em; padding-bottom: .5em;'>No tienes amigos</td></tr></table></li>";
-                        }
-                    ?> 
+		    <li><a href="#">Editar Perfil</a></li>
+		    <li><a href="#">Privacidad</a></li>
+		    <li><a href="#">Salir</a></li>
 		</ul>
 	</div>   
         <div id="dropdownSolicitudes" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
@@ -428,6 +451,21 @@
             </td>
         </tr>
     </table>
+    <table style="float: right; margin-right: 15%; padding-bottom: 25px;">
+        <tr>
+            <?php 
+                if($esAmigo=='si')
+                {
+                    echo "<td style='padding-bottom: .5em;'><a class='btn btn-large btn-block btn-inverse' style='height: 30px; width:200px;' href='javascript:AbrirEliminar();'><span class='input-icon fui-cross' style='margin-right: 3%;'></span>Eliminar de mis Amigos</a></td>";
+                }
+                else 
+                {
+                    echo "<td style='padding-bottom: .5em;'><a class='btn btn-large btn-block btn-inverse' style='height: 30px; width:200px;' href='javascript:AbrirAgregar();'><span class='input-icon fui-plus' style='margin-right: 3%;'></span>Agregar a mis Amigos</a></td>";
+                }
+            ?>          
+        </tr>
+    </table>
+    <br/>
   </center>
     
 <br/>  
@@ -530,25 +568,20 @@
         </tr>
     </table>
   </center>
- 
-<div id="dialog-message" title="Agregar Album">
-    <div>                
-        <div style="float: left; width: 50%">
-            <label><b>Nombre del Album:</b></label>
-        </div> 
-        <div style="float: left; width: 50%">
-            <input id="txtNombreAlbum" type="text" value="" class="form-control" />
-        </div>
-    </div>
-    <div style="padding-top: 5px;">                    
-        <div style="float: left; width: 50%">
-            <label><b>Privacidad del Album:</b></label>
-        </div> 
-        <div style="float: left; width: 50%">
-            <select id="ddlPrivacidadAlbum" style="width: 100%;">
-                <option value="1">Público</option>
-                <option value="2">Privado</option>
-            </select>
-        </div>
-    </div>
+<div id="dialog-eliminar" title="Eliminar">
+  <p>
+    <span id="spanMensajeDialogoConfirmacion"></span>
+  </p>
+</div>
+<div id="dialog-agregar" title="Agregar">
+  <p>
+    <span id="spanMensajeDialogoConfirmacionA"></span>
+  </p>
+</div>
+<div id="dialog-message" title="Eliminar">
+  <p>
+    <span class="ui-icon ui-icon-circle-check" style="float: left; margin: 0 7px 50px 0;"></span>
+    <input id="redirectUrl" type="hidden" value=""/>
+    <span id="spanMensajeDialogo"></span>
+  </p>
 </div>
