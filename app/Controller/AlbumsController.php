@@ -48,14 +48,12 @@ class AlbumsController extends AppController
          Los URL vienen de la funcion ajax de javascript*/
         
         $atributos = array(
-            0 => $this->params['url']['fkUsers'],
-            1 => $this->params['url']['nombre'],
-            2 => $this->params['url']['id'],
+            0 => $this->params['url']['album']
         );
         
         $this->loadModel("Album");
-        $amigo = $this->Album->eliminarAlbum($atributos[0],$atributos[1],$atributos[2]);
-        if(isset($amigo))
+        $album = $this->Album->eliminarAlbum($atributos[0]);
+        if(isset($album))
         {
             $response = 1;
         }

@@ -128,7 +128,25 @@
     else 
     {
         $urlLinkedin = '';
+    }
+    
+    if(isset($Usuariovista[0]['users']['foto']))
+    {
+        $fotoPerfil = $Usuariovista[0]['users']['foto'];
+    }
+    else 
+    {
+        $fotoPerfil = '../img/facebook350.jpg';
     }    
+    
+    if(isset($Usuariovista[0]['users']['privacidad']))
+    {
+        $privacidadUsuario = $Usuariovista[0]['users']['privacidad'];
+    }
+    else 
+    {
+        $privacidadUsuario = '';
+    }     
     
     $logout = $this->Session->read('logout');
     
@@ -225,10 +243,79 @@
             padding: 2px; 
             margin: 0px; 
             display: block; 
-        }         
+        }   
         
+        .notification-bubble {
+            height: 18px;
+            width: 18px;
+            background: #f56c7e url(../img/notification-bg-clear.png) no-repeat center center scroll;
+            background-image: none\9;
+            position: absolute;
+            right: 5px;
+            top: -10px;
+            color: #fff;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, .2);
+            text-align: center;
+            font-size: 9px;
+            line-height: 18px;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .17), 0 1px 1px rgba(0, 0, 0, .2);
+            -moz-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .17), 0 1px 1px rgba(0, 0, 0, .2);
+            -webkit-box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .17), 0 1px 1px rgba(0, 0, 0, .2);
+            border-radius: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }        
 </style>
 <script>
+    
+    function AceptarSolicitud(amigo) 
+    {
+        var valor = "<?php echo $usuario_Valores['User']['id']; ?>";         
+          
+          alert(valor);
+        $.ajax({
+                url:   '/UCABsocial/Friends/aceptarAmigo?fkUsers='+valor+"&fkUsers2="+amigo,
+                type:  'post',
+                success:  function (response) {
+                    var resultado = response;
+                    if(resultado.indexOf("0") != -1)
+                    {   
+                        $("#spanMensajeDialogo2").html('Solicitud de amistad aceptada'); 
+                        $("#dialog-mensajes").dialog("open"); 
+                    }
+                    else
+                    {                                                              
+                        $("#spanMensajeDialogo2").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente');                      
+                        $("#dialog-mensajes").dialog("open");
+                    }                            
+                }
+        });            
+    }    
+    
+    function RechazarSolicitud(amigo) 
+    {
+        var valor = "<?php echo $usuario_Valores['User']['id']; ?>";         
+          
+          
+        $.ajax({
+                url:   '/UCABsocial/Friends/rechazarAmigo?fkUsers='+valor+"&fkUsers2="+amigo,
+                type:  'post',
+                success:  function (response) {
+                    var resultado = response;
+                    if(resultado.indexOf("0") != -1)
+                    {  
+                        $("#spanMensajeDialogo2").html('Solicitud de amistad ignorada');                        
+                        $("#dialog-mensajes").dialog("open"); 
+                    }
+                    else
+                    {                                                              
+                        $("#spanMensajeDialogo2").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente');                             
+                        $("#dialog-mensajes").dialog("open");
+                    }                            
+                }
+        });            
+    }    
     
     function Perfil()
     {
@@ -253,13 +340,13 @@
     {
         var friendCode = "<?php echo $Usuariovista[0]['users']['id']; ?>"; 
         var perfilCode = "<?php echo $usuario_Valores['User']['id'] ?>";
-          
+        var url = '/UCABsocial/Friends/registrarAmigo?fkUsers='+friendCode+'&fkUsers2='+perfilCode;
         $.ajax({
-                url:   '/UCABsocial/Friends/registrarAmigo?fkUsers='+friendCode+'&fkUsers2='+perfilCode,
+                url:   url,
                 type:  'post',
                 success:  function (response) {
                     var resultado = response;
-                    if(resultado.indexOf("0") != -1)
+                    if(resultado.indexOf("1") != -1)
                     {                        
                         $("#spanMensajeDialogo").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente'); 
                         $("#dialog-message").dialog("open");                          
@@ -378,7 +465,21 @@
                   location.reload();
                 }
               }
-            });         
+            });
+            
+        
+        $( "#dialog-mensajes" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,              
+          buttons: {
+            Agregar: function() {
+              $(this).dialog( "close" );
+              location.reload();
+            }
+          }
+        });            
         
 //        $('#autoCompleteDiv').focusout(function() {
 //                $('#autoCompleteDiv').hide();
@@ -418,8 +519,8 @@
 		    <li><a href="<?php echo $logout; ?>">Salir</a></li>
 		</ul>
 	</div>
-        <a href="javascript:Perfil();"><span id="spanUsername" style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <?php echo $usernameConectado; ?> </span></a>        
-        <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
+        <a href="javascript:Perfil();"><span id="spanUsername" style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <img src="<?php echo $usuario_Valores['User']['foto']; ?>" width="25" height="25"/>  <?php echo $usernameConectado; ?> </span></a>        
+        <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">               
                 <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
                 <ul class="dropdown-menu" style="border: 1px solid black;">
 		    <li><a href="#">Editar Perfil</a></li>
@@ -428,20 +529,37 @@
 		</ul>
 	</div>   
         <div id="dropdownSolicitudes" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
+                <?php  
+                    if(count($solicitudesGrafo)>0)
+                    {
+                        echo '<span class="notification-bubble" title="Notifications" style="background-color: rgb(245, 108, 126); display: inline;">'.count($solicitudesGrafo).'</span>';
+                    }
+                ?>                 
                 <a id="toggleSolicitudes" class="dropdown-toggle" href="#"><span class="fui-user" ></span></a>
-                <ul class="dropdown-menu" style="border: 1px solid black;">
-		    <li><a href="#">Editar Perfil</a></li>
-		    <li><a href="#">Salir</a></li>
-		</ul>
+                <ul class="dropdown-menu" style="border: 1px solid black; width: 300px;">
+                    <?php 
+                        if(count($solicitudesGrafo)>0)
+                        {
+                            foreach($solicitudesGrafo as $solicitud)
+                            {
+                                echo "<li><table border='1' style='border: 1px solid black;'><tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black; width:41px; heigth:41px;'><img src='".$solicitud[0]['users']['foto']."' width='40' heigth='40' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$solicitud[0]['users']['username']."'>".$solicitud[0]['users']['nombre']." ".$solicitud[0]['users']['apellido']."<a></td></tr><tr><td><a id='btnAceptar' class='btn btn-info btn-lg btn-primary' href='javascript:AceptarSolicitud(".$solicitud[0]['users']['id'].");'>Aceptar</a></td><td><a id='btnAceptar' class='btn btn-info btn-lg btn-danger' href='javascript:RechazarSolicitud(".$solicitud[0]['users']['id'].");'>Rechazar</a></td></tr></table></li>";
+                            }
+                        }
+                        else 
+                        {
+                            echo "<li><table><tr><td style='padding-top: .5em; padding-bottom: .5em;'>No existen solicitudes pendientes</td></tr></table></li>";
+                        }
+                    ?> 
+		</ul> 
 	</div>         
     </div>
 </center>      
   <center>
-      <table cellspacing="1" cellpadding="20">
+      <table cellspacing="1" cellpadding="20" style="margin-left: auto; margin-right: auto; text-align: left;">
         <tr>
             <td>
-                <div id="divFoto" style="border: 1px solid black; width: 150px; height: 150px; float: left;">
-                    <img src="../img/facebook350.jpg" width="148" height="148"/>
+                <div id="divFoto" style="border: 1px solid black; width: 142px; height: 142px; float: left;">
+                    <img src="<?php echo $fotoPerfil; ?>" width="140" height="140"/>
                 </div>
             </td>
             <td>
@@ -451,17 +569,24 @@
             </td>
         </tr>
     </table>
-    <table style="float: right; margin-right: 15%; padding-bottom: 25px;">
+    <table style="float: right; margin-right: 15%; padding-bottom: 25px; width: 15%;">
         <tr>
             <?php 
                 if($esAmigo=='si')
                 {
-                    echo "<td style='padding-bottom: .5em;'><a class='btn btn-large btn-block btn-inverse' style='height: 30px; width:200px;' href='javascript:AbrirEliminar();'><span class='input-icon fui-cross' style='margin-right: 3%;'></span>Eliminar de mis Amigos</a></td>";
+                    echo "<td style='padding-bottom: .5em;'><a class='btn btn-large btn-block btn-inverse' style='height: 30px; width:400px padding-bottom: 30px;' href='javascript:AbrirEliminar();'><span class='input-icon fui-cross' style='margin-right: 3%;'></span>Eliminar de mis Amigos</a></td>";
                 }
-                else 
+                if($esAmigo=='no')
                 {
-                    echo "<td style='padding-bottom: .5em;'><a class='btn btn-large btn-block btn-inverse' style='height: 30px; width:200px;' href='javascript:AbrirAgregar();'><span class='input-icon fui-plus' style='margin-right: 3%;'></span>Agregar a mis Amigos</a></td>";
-                }
+                    if($pendienteAprobacion == 'no')
+                    {
+                        echo "<td style='padding-bottom: .5em;'><a class='btn btn-large btn-block btn-inverse' style='height: 30px; width:400px padding-bottom: 30px;' href='javascript:AbrirAgregar();'><span class='input-icon fui-plus' style='margin-right: 3%;'></span>Agregar a mis Amigos</a></td>";
+                    }
+                    else
+                    {
+                        echo "<td style='padding-bottom: .5em;'><a href='#fakelink' class='btn btn-block btn-lg btn-default disabled' style='height: 30px; width:400px; padding-bottom: 30px;'><span class='input-icon fui-user' style='margin-right: 3%;'></span>En espera de aprobación</a></td>";
+                    }                    
+                }               
             ?>          
         </tr>
     </table>
@@ -478,7 +603,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <span style="font-size: 17pt"><b>Información</b></span><br/>
+                                    <span style="font-size: 17pt"> <img src='../img/profile.png'/> &nbsp;&nbsp; <b>Información</b></span><br/>
                                     <br>                                   
                                     <span style="font-size: 12pt; padding-top: 10px;">Sexo:<a style="color:#1ABC9C; font-size: 12pt; font-family: sans-serif"> <?php echo $sexo; ?> </a></span><br>                                                                                                          
                                     <div style="clear: both; padding-top: 2px; padding-bottom: 2px;"></div>                                    
@@ -492,33 +617,47 @@
                     <div style="clear: both;"></div>
                     <div style="clear: both;"></div> 
                     <br/>
+                    <?php if(($privacidadUsuario == 'Público') || ($esAmigo=='si')) { ?>
                     <div style="padding-top:30px" class="gradientBoxesWithOuterShadows">
                         <table>
                             <tr>
                                 <td>
-                                    <span style="font-size: 17pt"><b>Información de Contacto</b></span><br/>
-                                    <br>                                   
+                                    <span style="font-size: 17pt"> <img src='../img/contact.png'/> &nbsp;&nbsp; <b>Información de Contacto</b></span><br/>
+                                    <br>
+                                    <?php if($emailUsuario != '') { ?>
                                     <span style="font-size: 12pt">Email:<a style="color:#1ABC9C; font-size: 12pt; font-family: sans-serif"> <?php echo $emailUsuario; ?> </a></span><br>                                    
+                                    <?php } ?>
                                     <div style="clear: both; padding-top: 2px; padding-bottom: 2px;"></div>
+                                    <?php if($telefonoUsuario != '') { ?>
                                     <span style="font-size: 12pt">Teléfono:<a style="color:#1ABC9C; font-size: 12pt; font-family: sans-serif"> <?php echo $telefonoUsuario; ?> </a></span><br>
+                                    <?php } ?>                                    
                                     <div style="clear: both; padding-top: 3px; padding-bottom: 2px;"></div>
-                                    <a href="<?php echo $urlFacebook; ?>"><img src="<?php echo $this->webroot; ?>img/facebook.png" /></a>  <a href="<?php echo $urlTwitter; ?>"><img src="<?php echo $this->webroot; ?>img/twitter.png" /></a>   <a href="<?php echo $urlLinkedin; ?>"><img src="<?php echo $this->webroot; ?>img/linkedin.png" /></a>
+                                    <?php if($urlFacebook != '') { ?>                                    
+                                    <a href="<?php echo $urlFacebook; ?>"><img src="<?php echo $this->webroot; ?>img/facebook.png" /></a>  
+                                    <?php } ?>                                       
+                                    <?php if($urlTwitter != '') { ?> 
+                                    <a href="<?php echo $urlTwitter; ?>"><img src="<?php echo $this->webroot; ?>img/twitter.png" /></a>
+                                    <?php } ?> 
+                                    <?php if($urlLinkedin != '') { ?>                                     
+                                    <a href="<?php echo $urlLinkedin; ?>"><img src="<?php echo $this->webroot; ?>img/linkedin.png" /></a>
+                                    <?php } ?>                                     
                                 </td>
                             </tr>
                         </table>
                     </div>
+                    <?php } ?>
                     <div style="clear: both;"></div>
                     <div style="clear: both;"></div> 
                     <br/>
                     <div style="padding-top:30px" class="gradientBoxesWithOuterShadows">
-                        <span style="font-size: 17pt"><b>Amigos</b></span><br/>
+                        <span style="font-size: 17pt"><img src='../img/friends.png'/> &nbsp;&nbsp; <b>Amigos</b></span><br/>
                         <table>
                             <?php 
                                 if(count($amigosGrafo2)>0)
                                 {
                                     foreach($amigosGrafo2 as $amigosCompletos2)
                                     {
-                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/facebook350.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='".$amigosCompletos2[0]['users']['foto']."' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
                                     }
                                 }
                                 else 
@@ -532,19 +671,20 @@
             </td>
             <td style="width:55%; vertical-align: top; padding-left: 20px; ">
                 <div style="padding-left: 2%;" class="gradientBoxesWithOuterShadows">
-                    <span style="font-size: 17pt"><b>Contenido Multimedia</b></span>
+                    <span style="font-size: 17pt"><img src='../img/media.jpg'/> &nbsp;&nbsp; <b>Contenido Multimedia</b></span>
                     <div id="accordion" style="margin-left:10%;padding-top:10px;">
-                        <h3 style="color: #1ABC9C">FOTOS</h3>
+                        <h3 style="color: #1ABC9C"> <span class="fui-photo"></span>&nbsp;&nbsp; FOTOS </h3>
                         <div>
-                            <span class="input-icon fui-photo" style="margin-right: 3%;"><a href="Javascript:AbrirDialogo();">   AGREGAR ALBUM </a></span>
-                            <br/>
                             <table>
                                 <?php 
                                     if(count($albums)>0)
                                     {
                                         foreach($albums as $album)
                                         {
-                                            echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/album.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/album?code=".$album['albums']['id']."'>".$album['albums']['nombre']." <a></td></tr>";
+                                            if(($album['albums']['privacidad'] == 'Público') || ($esAmigo=='si')) 
+                                            {
+                                                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/album.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/album?code=".$album['albums']['id']."'>".$album['albums']['nombre']." <a></td></tr>";
+                                            }
                                         }
                                     }
                                     else
@@ -554,11 +694,11 @@
                                 ?>
                             </table>
                         </div>
-                        <h3 style="color: #1ABC9C">VÍDEOS</h3>
+                        <h3 style="color: #1ABC9C"> <span class="fui-video"></span>&nbsp;&nbsp; VÍDEOS</h3>
                         <div>
                             <p>No existen publicaciones por el momento</p>
                         </div>
-                        <h3 style="color:#1ABC9C">MÚSICA</h3>
+                        <h3 style="color:#1ABC9C"><span class="fui-volume"></span>&nbsp;&nbsp; MÚSICA</h3>
                         <div>
                             <p>No existen publicaciones por el momento</p>
                         </div>
@@ -580,8 +720,13 @@
 </div>
 <div id="dialog-message" title="Eliminar">
   <p>
-    <span class="ui-icon ui-icon-circle-check" style="float: left; margin: 0 7px 50px 0;"></span>
     <input id="redirectUrl" type="hidden" value=""/>
     <span id="spanMensajeDialogo"></span>
+  </p>
+</div>
+<div id="dialog-mensajes" title="Solicitudes de Amistad">
+  <p>
+    <input id="redirectUrl2" type="hidden" value=""/>
+    <span id="spanMensajeDialogo2"></span>
   </p>
 </div>

@@ -415,7 +415,7 @@
 </center>
 
 <div class="register" style="min-height: 450px;">
-    <div class="register-screen" style="100%;">
+    <div class="register-screen">
         <div class="register-icon" >
           <img src="../img/login/smile.png" alt="UCABsocial" />
           <h4>Editar Perfil <small>UCABsocial</small></h4>

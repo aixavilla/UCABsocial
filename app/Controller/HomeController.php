@@ -70,7 +70,7 @@ class HomeController extends AppController {
                 $validar = $this->User->find('first', array('conditions' => array('User.facebookid' => $usuarioF['id'])));
                 $this->Session->write('chequeo',$validar);                
 
-                if(isset($validar['User']['facebookid']))
+                if(!empty($validar))
                 {
                     $this->redirect(array('controller' => 'Registro', 'action' => 'puente'));
                 } 
@@ -87,7 +87,8 @@ class HomeController extends AppController {
    }
  
    public function facebook_logout(){
-       /*Funcion que desconecta de facebook y borra la variable de session*/
+       /*Funcion que desconecta de facebook y borra la variables de session*/
+        $this->layout = 'paginas';
         $this->Session->delete('User');
         $this->Session->delete('logout');
         session_unset();

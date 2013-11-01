@@ -2,6 +2,8 @@
     $ses_user=$this->Session->read('User');
     $logout = $this->Session->read('logout');
     
+    $imagenPerfil = 'https://graph.facebook.com/'.$ses_user['id'].'/picture?width=200&height=200';
+    
     if(isset($ses_user['first_name']))
     {
         $primerNombre = $ses_user['first_name'];        
@@ -75,6 +77,16 @@
     {
         $email = '';
     }    
+    
+    if(isset($ses_user['link']))
+    {
+        $linkFacebook = $ses_user['link'];        
+    }
+    else 
+    {
+        $linkFacebook = '';
+    }    
+    
     echo $this->Html->script('validCampoFranz');  
         
 ?>
@@ -196,8 +208,11 @@
     {
         if(Validar())
         {
+            var imagen = "<?php echo $imagenPerfil; ?>"; 
+            var enlace = "<?php echo $linkFacebook; ?>";             
+            
             $.ajax({
-                    url:   '/UCABsocial/Registro/registrarUsuario?nombre='+$("#txtNombre").val()+'&nombreDos='+$("#txtNombreDos").val()+'&apellido='+$("#txtApellido").val()+'&apellidoDos='+$("#txtApellidoDos").val()+'&genero='+$("#ddlGenero option:selected").text()+'&fecha='+$("#txtFechaNacimiento").val()+'&username='+$("#txtUsername").val()+'&correo='+$("#txtEmail").val()+'&ubicacion='+$("#city").val(),
+                    url:   '/UCABsocial/Registro/registrarUsuario?nombre='+$("#txtNombre").val()+'&nombreDos='+$("#txtNombreDos").val()+'&apellido='+$("#txtApellido").val()+'&apellidoDos='+$("#txtApellidoDos").val()+'&genero='+$("#ddlGenero option:selected").text()+'&fecha='+$("#txtFechaNacimiento").val()+'&username='+$("#txtUsername").val()+'&correo='+$("#txtEmail").val()+'&ubicacion='+$("#city").val()+'&foto='+imagen+'&link='+enlace,
                     type:  'post',
                     success:  function (response) {
                         var resultado = response;

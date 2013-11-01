@@ -33,13 +33,13 @@
         public function getNombresUsuarios($variable)
         {
             /*Busca los usuarios registrados en la red social segun un rango de campos especificos por el usuario registrado*/
-        return $this->query("SELECT U.ID, U.nombre, U.nombre2, U.apellido, U.apellido2, U.username FROM Users U WHERE 
+        return $this->query("SELECT U.ID, U.nombre, U.nombre2, U.apellido, U.apellido2, U.username, U.foto FROM Users U WHERE 
        (U.nombre LIKE '%".$variable."%' OR U.nombre2 LIKE '%".$variable."%' OR U.apellido LIKE '%".$variable."%' OR apellido2 LIKE '%".$variable."%');");
         }        
         
         public function registrarUsuario($atributos)
         {
-            $this->query("INSERT INTO users (nombre, nombre2, apellido, apellido2, username, email, birthday, genero, ubicacion, privacidad, created, modified, facebookid, googleid) VALUES ('".$atributos[0]."','".$atributos[1]."','".$atributos[2]."','".$atributos[3]."','".$atributos[6]."','".$atributos[7]."','".$atributos[5]."','".$atributos[4]."','".$atributos[8]."', 'Público', NOW(), NULL,'".$atributos[9]."',NULL);");
+            $this->query("INSERT INTO users (nombre, nombre2, apellido, apellido2, username, email, birthday, genero, ubicacion, privacidad, created, modified, facebookid, googleid, foto, urlFacebook) VALUES ('".$atributos[0]."','".$atributos[1]."','".$atributos[2]."','".$atributos[3]."','".$atributos[6]."','".$atributos[7]."','".$atributos[5]."','".$atributos[4]."','".$atributos[8]."', 'Público', NOW(), NULL,'".$atributos[9]."',NULL, '".$atributos[10]."', '".$atributos[11]."');");
             return $this->query("SELECT MAX(ID) FROM users;");       
         } 
         

@@ -57,7 +57,15 @@ $(document).ready(function(){
         var options = '<table>'; 
         $.each(itemList, function(index, name) { 
               var arrStr = name.split(/[+]/);
-              options += "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/facebook350.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a autoCompleteItem='"+tag+"' href='/UCABsocial/Perfil/index?user="+arrStr[1]+"'>"+arrStr[0]+"<a></td></tr>";
+              //alert(arrStr[2]);
+              if(!arrStr[2].indexOf("https://") !== -1)
+              {
+                options += "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='"+arrStr[2]+"' width='60' heigth='60' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a autoCompleteItem='"+tag+"' href='/UCABsocial/Perfil/index?user="+arrStr[1]+"'>"+arrStr[0]+"<a></td></tr>";
+              }
+              if(arrStr[2]===null)
+              {
+                options += "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><img src='../img/loading.gif' /></td></tr>";
+              }
               //options += '<a autoCompleteItem='+tag+' href="'+name+'" >' +  name + '</a>'; 
             });
             options += '</table>';

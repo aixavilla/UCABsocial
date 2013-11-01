@@ -19,7 +19,13 @@ class PerfilController extends AppController{
            $amigosvista = $amigos->listarAmigos($Usuario[0]['users']['id']); 
            
            $perfilEnSession = $this->Session->read('chequeo');
+           
+           if($perfilEnSession['User']['username'] == $arreglo['user'])
+           {
+                $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));                
+           }
            $esAmigo = 'no';
+           $porAprobar = 'no';
            $amigosFinal = array();
            foreach($amigosvista as $amigo)
            {
@@ -41,6 +47,33 @@ class PerfilController extends AppController{
             $amigosGrafo = $this->amigosGrafo($amigosFinal);
             $this->Session->write('amigosG',$amigosGrafo); 
             $this->set('amigosGrafo2',$amigosGrafo);
+            
+            $enEspera = $amigos->enEspera($Usuario[0]['users']['id'], $perfilEnSession['User']['id']);
+            $this->Session->write('porAprobar',$enEspera);
+            if(isset($enEspera[0]))
+            {
+                if(count($enEspera) >= 0)
+                {
+                    if($enEspera[0]['friends']['id'] != 0)
+                    {
+                        $porAprobar = 'si';
+                    }
+                }
+            }
+            $this->set('pendienteAprobacion',$porAprobar);
+            
+           $solicitudesvista = $amigos->listarSolicitudes($perfilEnSession['User']['id']);
+           
+           $solicitudes = array();
+           foreach($solicitudesvista as $solicitud)
+           {
+               if($solicitud['friends']['fkUsers']== $perfilEnSession['User']['id'])
+               {   
+                    $solicitudes[] = $solicitud['friends']['fkUsers2'];
+               } 
+            }
+            $solicitudesGrafo = $this->amigosGrafo($solicitudes);
+            $this->set('solicitudesGrafo',$solicitudesGrafo);              
             
             $todosUsuario = $this->User->usuariosCompletos();
             $this->set('todos',$todosUsuario);    

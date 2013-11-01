@@ -76,12 +76,8 @@ class RegistroController extends AppController
            {
                if($solicitud['friends']['fkUsers']== $Usuario[0]['users']['id'])
                {   
-                    $solicitudes[] = $amigo['friends']['fkUsers2'];
+                    $solicitudes[] = $solicitud['friends']['fkUsers2'];
                } 
-               else
-               {
-                   $solicitudes[]=$amigo['friends']['fkUsers'];  
-               }
             }
             $solicitudesGrafo = $this->amigosGrafo($solicitudes);
             $this->set('solicitudesGrafo',$solicitudesGrafo);           
@@ -142,7 +138,7 @@ class RegistroController extends AppController
         $variable = '';
         foreach($terms as $termino)
         {
-            $variable = $variable.$termino['U']['nombre'].' '.$termino['U']['nombre2'].' '.$termino['U']['apellido'].' '.$termino['U']['apellido2'].'+'.$termino['U']['username']."*"; 
+            $variable = $variable.$termino['U']['nombre'].' '.$termino['U']['nombre2'].' '.$termino['U']['apellido'].' '.$termino['U']['apellido2'].'+'.$termino['U']['username'].'+'.$termino['U']['foto']."*"; 
         }
         $respuesta = substr($variable, 0, -1);
         $friends = explode("*", $respuesta);
@@ -193,7 +189,9 @@ class RegistroController extends AppController
             6 => $this->params['url']['username'],
             7 => $this->params['url']['correo'],   
             8 => $this->params['url']['ubicacion'],   
-            9 => $ses_user['id']
+            9 => $ses_user['id'],
+            10 => $this->params['url']['foto'],
+            11 => $this->params['url']['link']            
         );
         
         $this->loadModel("User");  

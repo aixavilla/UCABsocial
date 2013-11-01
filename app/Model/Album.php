@@ -10,7 +10,6 @@
           
         }
         
-        
         public function agregarNuevoAlbum($atributos)
         {
           if($this->query("INSERT INTO albums (created, nombre, privacidad, fkUsers) VALUES (NOW(), '".$atributos[0]."', '".$atributos[1]."',".$atributos[2].");"))
@@ -22,15 +21,11 @@
              return 0;      
           }
         }
-        
-   
 
-
-        public function eliminarAlbum($idUser,$nameAlbum,$idAlbum)
+        public function eliminarAlbum($idAlbum)
         {
-            $this->query("delete from albums where ((fkUsers = ".$idUser.") and  (nombre = '".$nameAlbum."') and (id = ".$idAlbum."));");       
-        }
-                
+            $this->query("delete from albums where id = ".$idAlbum.";");       
+        }        
     }
                 
 ?>

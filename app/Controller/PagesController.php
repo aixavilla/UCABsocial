@@ -79,7 +79,14 @@ class PagesController extends AppController {
                 if(isset($_SESSION['User']))
                 {
                     $ses_user=$this->Session->read('User');
-                    $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));
+                    $this->loadModel('User');
+                    $validar = $this->User->find('first', array('conditions' => array('User.facebookid' => $ses_user['id'])));  
+                    $this->Session->write('chequeo',$validar);                     
+
+                    if(!empty($validar))
+                    {
+                        $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));
+                    }                     
                 }                 
 	}
         
