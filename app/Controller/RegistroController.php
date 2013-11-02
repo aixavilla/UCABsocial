@@ -232,8 +232,8 @@ class RegistroController extends AppController
         );
         
         $this->loadModel("User");  
-        $consulta = $this->User->editarUsuario($atributos);       
-        if($consulta == 1)
+        $consulta = $this->User->editarUsuario($atributos);     
+        if($consulta)
         {
             $response = 1;
         }

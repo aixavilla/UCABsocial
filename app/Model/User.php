@@ -33,7 +33,7 @@
         public function getNombresUsuarios($variable)
         {
             /*Busca los usuarios registrados en la red social segun un rango de campos especificos por el usuario registrado*/
-        return $this->query("SELECT U.ID, U.nombre, U.nombre2, U.apellido, U.apellido2, U.username, U.foto FROM Users U WHERE 
+        return $this->query("SELECT U.ID, U.nombre, U.nombre2, U.apellido, U.apellido2, U.username, U.foto FROM users U WHERE 
        (U.nombre LIKE '%".$variable."%' OR U.nombre2 LIKE '%".$variable."%' OR U.apellido LIKE '%".$variable."%' OR apellido2 LIKE '%".$variable."%');");
         }        
         
@@ -45,14 +45,8 @@
         
         public function editarUsuario($atributos)
         {
-            if($this->query("UPDATE users SET nombre='".$atributos[0]."', nombre2='".$atributos[1]."', apellido='".$atributos[2]."', apellido2='".$atributos[3]."', username='".$atributos[6]."', email='".$atributos[7]."', telefono='".$atributos[10]."', birthday='".$atributos[5]."', genero='".$atributos[4]."', descripcion='".$atributos[9]."', ubicacion='".$atributos[8]."', privacidad='".$atributos[11]."', modified=NOW(), urlFacebook='".$atributos[12]."', urlTwitter='".$atributos[13]."', urlLinkedin='".$atributos[14]."' WHERE id = ".$atributos[15].";"))
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }     
+            return $this->query("UPDATE users SET nombre='".$atributos[0]."', nombre2='".$atributos[1]."', apellido='".$atributos[2]."', apellido2='".$atributos[3]."', username='".$atributos[6]."', email='".$atributos[7]."', telefono='".$atributos[10]."', birthday='".$atributos[5]."', genero='".$atributos[4]."', descripcion='".$atributos[9]."', ubicacion='".$atributos[8]."', privacidad='".$atributos[11]."', modified=NOW(), urlFacebook='".$atributos[12]."', urlTwitter='".$atributos[13]."', urlLinkedin='".$atributos[14]."' WHERE id = ".$atributos[15].";");
+         
         }        
     }
 

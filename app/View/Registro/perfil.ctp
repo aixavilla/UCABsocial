@@ -547,7 +547,7 @@
         <a href="#"><span style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <img src="<?php echo $imagen; ?>" width="25" height="25"/>  <?php echo $usernameUsuario; ?></span></a>        
         <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
                 <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
-                <ul class="dropdown-menu" style="border: 1px solid black;">
+                <ul class="dropdown-menu" style="border: 1px solid black; width: 300px;">
 		    <li><a href="#">No existen notificaciones</a></li>
 		</ul>                
 	</div>   

@@ -522,10 +522,8 @@
         <a href="javascript:Perfil();"><span id="spanUsername" style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <img src="<?php echo $usuario_Valores['User']['foto']; ?>" width="25" height="25"/>  <?php echo $usernameConectado; ?> </span></a>        
         <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">               
                 <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
-                <ul class="dropdown-menu" style="border: 1px solid black;">
-		    <li><a href="#">Editar Perfil</a></li>
-		    <li><a href="#">Privacidad</a></li>
-		    <li><a href="#">Salir</a></li>
+                <ul class="dropdown-menu" style="border: 1px solid black; width: 300px;">
+		    <li><a href="#">No existen notificaciones</a></li>
 		</ul>
 	</div>   
         <div id="dropdownSolicitudes" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">

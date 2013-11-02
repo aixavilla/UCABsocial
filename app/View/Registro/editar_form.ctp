@@ -118,6 +118,15 @@
     
     if(isset($perfilEditar[0]['users']['privacidad']))
     {
+        if($perfilEditar[0]['users']['privacidad'] == 'Público')
+        {
+            $valorPrivacidadDdl = 1;
+        }
+        else 
+        {
+            $valorPrivacidadDdl = 2;
+        }
+        
         $privacidad = $perfilEditar[0]['users']['privacidad'];        
     }
     else 
@@ -307,17 +316,17 @@
                     type:  'post',
                     success:  function (response) {
                         var resultado = response;
-                        if(resultado.indexOf("Fallo") != -1)
-                        {                        
-                            $("#redirectUrl").val('/UCABsocial/Pages/display');
-                            $("#spanMensajeDialogo").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente.');
-                            $("#dialog-message").dialog("open");                                                                     
+                        if(resultado.indexOf("1") != -1)
+                        {            
+                            $("#redirectUrl").val("/UCABsocial/Registro/Perfil");
+                            $("#spanMensajeDialogo").html('Se ha actualizado el perfil correctamente.');
+                            $("#dialog-message").dialog("open");                              
                         }
                         else
                         {                                                                
-                            $("#redirectUrl").val("/UCABsocial/Registro/Perfil");
-                            $("#spanMensajeDialogo").html('Se ha actualizado el perfil correctamente.');
-                            $("#dialog-message").dialog("open");                             
+                            $("#redirectUrl").val('/UCABsocial/Pages/display');
+                            $("#spanMensajeDialogo").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente.');
+                            $("#dialog-message").dialog("open");                           
                         }                            
                     }
             });            
@@ -332,6 +341,9 @@
 
         var valor = "<?php echo $genero; ?>";
         $("#ddlGenero").val(valor);
+        
+        var valorPrivacidad = "<?php echo $valorPrivacidadDdl; ?>";
+        $("#ddlPrivacidad").val(valorPrivacidad);        
 
         $("#txtFechaNacimiento").datepicker({
               changeMonth: true,
@@ -349,7 +361,7 @@
         $('#city').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou'); 
         $('#txtUsername').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.'); 
         $('#txtEmail').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.@');  
-        $('#txtDescripcion').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789.,:;-_()');  
+        $('#txtDescripcion').validCampoFranz(' abcdefghijklmnñopqrstuvwxyzáéiou0123456789.,:;-_()');  
         $('#txtTelefono').validCampoFranz('0123456789'); 
 
         $( "#city" ).autocomplete({
