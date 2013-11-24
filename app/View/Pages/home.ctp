@@ -28,10 +28,9 @@
             </script>            
     </head>
     <body>
-        <div class="container" style="padding-top: 80px;"> 
-            
-        <div class="login">
-          <div class="login-screen">
+     <div class="container" >           
+         <div class="login">
+             <div class="login-screen">
             <div class="login-icon">
               <img src="img/login/smile.png" alt="UCABsocial" />
               <h4>Bienvenido a <small>UCABsocial</small></h4>

@@ -39,12 +39,16 @@
 <body>
     <div id="container">
             <div id="header">
-                <div style="float: left; width: 50%; text-align: center;">
-                    <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120" style="padding-left: 25px;"> 
-                </div>
-                <div style="float: left; width: 50%; text-align: center;">
-                    <h4 style="font-weight: bold; padding-top: 5px;">Bienvenidos a la Red Social Ucabista</h4> 
-                </div>
+                <div class="navbar navbar-inverse" style="width: 99.5%; padding-left: 3px;">          
+                   <ul class="nav navbar-nav navbar-left"> 
+                     <li>
+                       <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120">           
+                     </li>
+                   </ul>
+                    <div style="float: right; padding-right: 40px; padding-top: 15px;">
+                        <h4 style="color: white;">Bienvenidos a la Red Social Ucabista</h4>
+                    </div>
+               </div>                 
             </div>
             <div id="content" style="padding-top: 35px;">
 
@@ -55,6 +59,6 @@
             <div id="footer" style="text-align: center;">
                 <h7 style="font-weight: bold; padding-top: 5px;"> UCABsocial® - Copyright - 2013 </h7>
             </div>
-    </div>
+    </div> 
 </body>
 </html>

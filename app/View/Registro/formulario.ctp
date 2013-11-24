@@ -353,7 +353,6 @@
         </ul>       
     </div>
 </center>
-
 <div class="register">
     <div class="register-screen">
         <div class="register-icon" >
@@ -361,6 +360,12 @@
           <h4>Registro <small>UCABsocial</small></h4>
         </div>
         <div class="login-form" style="width: 100%;">
+            <div id="divMensaje" class="form-group has-success" style="display: none; padding-top: 2%;">
+                <input id="txtMensaje" type="text" value="" class="form-control" readonly="readonly"/>
+            </div>  
+            <div id="divMensajeError" class="form-group has-error" style="display: none; padding-top: 2%;">
+                <input id="txtMensajeError" type="text" value="" class="form-control" readonly="readonly"/>
+            </div>
             <form>
                 <div style="width: 100%; padding-bottom: 2%;">
                     <div style="float: left; width: 50%">                    
@@ -449,7 +454,7 @@
                         </div>
                     </div>
                     <div style="float: left; width: 50%; text-align: center;"> 
-                        <div style="float: left; width: 25%">
+                        <div style="float: left; width: 40%">
                             <a id="Cancelar" class="btn btn-info btn-lg btn-danger" style="height: 41px; width: 50%;" href= "<?php echo $logout; ?>">Cancelar</a> 
                         </div> 
                         <div style="float: left; width: 50%">
@@ -457,13 +462,7 @@
                         </div>                                                              
                     </div>                    
                 </div>                
-            </form> 
-            <div id="divMensaje" class="form-group has-success" style="display: none; padding-top: 2%;">
-                <input id="txtMensaje" type="text" value="" class="form-control" readonly="readonly"/>
-            </div>  
-            <div id="divMensajeError" class="form-group has-error" style="display: none; padding-top: 2%;">
-                <input id="txtMensajeError" type="text" value="" class="form-control" readonly="readonly"/>
-            </div>              
+            </form>             
         </div>
     </div>
 </div>

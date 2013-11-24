@@ -105,7 +105,16 @@
     else 
     {
         $descripcion = '';
-    }      
+    } 
+    
+    if(isset($perfilEditar[0]['users']['foto']))
+    {
+        $imagen = $perfilEditar[0]['users']['foto'];        
+    }
+    else 
+    {
+        $imagen = '';
+    }     
     
     if(isset($perfilEditar[0]['users']['ubicacion']))
     {
@@ -169,6 +178,8 @@
     {
         $idFacebook = '';
     }     
+    
+    $logout = $this->Session->read('logout');
     
     echo $this->Html->script('validCampoFranz');  
         
@@ -339,6 +350,10 @@
 
     $(document).ready(function() {
 
+        $("#locations").addClass("todo-search-field"); 
+        $('#locations').attr('placeholder', 'Buscar personas');
+        $('#locations').css('width', '650px');
+
         var valor = "<?php echo $genero; ?>";
         $("#ddlGenero").val(valor);
         
@@ -418,11 +433,65 @@
 
 <center>
     <div class="navbar navbar-inverse" style="width: 99.5%;">          
-        <ul class="nav navbar-nav navbar-left"> 
+        <ul class="nav navbar-nav navbar-left" style='padding-right:100px'> 
           <li>
             <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120">           
           </li>
-        </ul>       
+        </ul>   
+    <div class="todo-search" style="width:700px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
+                <?php  
+                    echo $this->AutoComplete->input( 
+                        'locations', 
+                        array( 
+                            'autoCompleteUrl'=>$this->Html->url(  
+                                array( 
+                                    'controller'=>'Registro', 
+                                    'action'=>'auto_complete', 
+                                ) 
+                            ), 
+                            'autoCompleteRequestItem'=>'autoCompleteText', 
+                        ) 
+                    ); 
+                ?>            
+        </div>
+        <div id="dropdownPerfil" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 10px">
+                <a id="togglePerfil" class="dropdown-toggle" href="#"><span class="fui-gear" ></span></a>
+                <ul class="dropdown-menu" style="border: 1px solid black;">
+		    <li><a href="/UCABsocial/Registro/editarForm">Editar Perfil</a></li>
+		    <li><a href="<?php echo $logout; ?>">Salir</a></li>
+		</ul>
+	</div>
+        <a href="#"><span style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <img src="<?php echo $imagen; ?>" width="25" height="25"/>  <?php echo $username; ?></span></a>        
+        <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
+                <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
+                <ul class="dropdown-menu" style="border: 1px solid black; width: 300px;">
+		    <li><a href="#">No existen notificaciones</a></li>
+		</ul>                
+	</div>   
+        <div id="dropdownSolicitudes" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 30px">
+                <?php  
+                    if(count($solicitudesGrafo)>0)
+                    {
+                        echo '<span class="notification-bubble" title="Notifications" style="background-color: rgb(245, 108, 126); display: inline;">'.count($solicitudesGrafo).'</span>';
+                    }
+                ?>                         
+                <a id="toggleSolicitudes" class="dropdown-toggle" href="#"><span class="fui-user" ></span></a>
+                <ul class="dropdown-menu" style="border: 1px solid black; width: 300px;">
+                    <?php 
+                        if(count($solicitudesGrafo)>0)
+                        {
+                            foreach($solicitudesGrafo as $solicitud)
+                            {
+                                echo "<li><table border='1' style='border: 1px solid black;'><tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black; width:41px; heigth:41px;'><img src='".$solicitud[0]['users']['foto']."' width='40' heigth='40' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$solicitud[0]['users']['username']."'>".$solicitud[0]['users']['nombre']." ".$solicitud[0]['users']['apellido']."<a></td></tr><tr><td><a id='btnAceptar' class='btn btn-info btn-lg btn-primary' href='javascript:AceptarSolicitud(".$solicitud[0]['users']['id'].");'>Aceptar</a></td><td><a id='btnAceptar' class='btn btn-info btn-lg btn-danger' href='javascript:RechazarSolicitud(".$solicitud[0]['users']['id'].");'>Rechazar</a></td></tr></table></li>";
+                            }
+                        }
+                        else 
+                        {
+                            echo "<li><table><tr><td style='padding-top: .5em; padding-bottom: .5em;'>No existen solicitudes pendientes</td></tr></table></li>";
+                        }
+                    ?> 
+		</ul>                
+	</div>        
     </div>
 </center>
 

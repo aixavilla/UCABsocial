@@ -120,7 +120,22 @@ class RegistroController extends AppController
            $this->loadModel("User");
            $Usuario = $this->User->getUser($ses_user['id']);
            $this->Session->write('perfileditar', $Usuario);
-           $this->set('perfilEditar',$Usuario);            
+           $this->set('perfilEditar',$Usuario); 
+
+           App::import('Controller', 'Friends');
+           $amigos = new FriendsController;
+           $solicitudesvista = $amigos->listarSolicitudes($Usuario[0]['users']['id']);
+           
+           $solicitudes = array();
+           foreach($solicitudesvista as $solicitud)
+           {
+               if($solicitud['friends']['fkUsers']== $Usuario[0]['users']['id'])
+               {   
+                    $solicitudes[] = $solicitud['friends']['fkUsers2'];
+               } 
+            }
+            $solicitudesGrafo = $this->amigosGrafo($solicitudes);
+            $this->set('solicitudesGrafo',$solicitudesGrafo);             
        }         
        else
        {

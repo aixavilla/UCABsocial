@@ -343,18 +343,19 @@
     
     function AbrirDialogo()
     {
+        $("#txtNombreAlbum").val("");
         $("#dialog-agregar").dialog("open");                                                                             
     }
     
     function AbrirDialogoEliminar(idAlbum)
     {
-        alert(idAlbum);
         $("#txtAlbumEliminar").val(idAlbum); 
         $("#dialog-eliminar").dialog("open");                                                                             
     }    
     
     function AgregarAlbum() 
     {
+        
         if($("#txtNombreAlbum").val() == "")
         {
             var today = new Date();
@@ -412,6 +413,7 @@
       
         $("#locations").addClass("todo-search-field"); 
         $('#locations').attr('placeholder', 'Buscar personas');
+        $('#locations').css('width', '650px');
       
         $( "#accordion" ).accordion({
            heightStyle: "content"
@@ -519,7 +521,7 @@
             <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120"> 
           </li> 
         </ul>
-        <div class="todo-search" style="width:300px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
+        <div class="todo-search" style="width:700px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
 <!--            <input class="todo-search-field" type="search" value="" placeholder="Buscar personas"  />-->
 <!--            <input name="data[locations]" update="autoCompleteDiv" autocompletetext="1" autocompleteurl="/UCABsocial/Registro/auto_complete" autocompleterequestitem="autoCompleteText" type="text" id="locations">-->
                 <?php  
@@ -537,7 +539,7 @@
                     ); 
                 ?>            
         </div>
-        <div id="dropdownPerfil" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 50px">
+        <div id="dropdownPerfil" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 18px">
                 <a id="togglePerfil" class="dropdown-toggle" href="#"><span class="fui-gear" ></span></a>
                 <ul class="dropdown-menu" style="border: 1px solid black;">
 		    <li><a href="/UCABsocial/Registro/editarForm">Editar Perfil</a></li>
@@ -576,30 +578,48 @@
 		</ul>                
 	</div>         
     </div>
-</center>      
-  <center>
-      <table cellspacing="1" cellpadding="20">
-        <tr>
-            <td>
-                <div id="divFoto" style="border: 1px solid black; width: 150px; height: 150px; float: left;">
-                    <img src="<?php echo $imagen; ?>" width="148" height="148"/>
-                </div>
-            </td>
-            <td>
-                <h3 align="center"><?php echo $primernombre.' '.$segundonombre.' '.$primerapellido.' '.$segundoapellido;?></h3> 
-                <br/>
-                <h6><blockquote><?php echo $descripcion; ?></blockquote></h6>                
-            </td>
-        </tr>
-    </table>
-  </center>
+</center>   
+  
+  <table cellspacing="1" cellpadding="20" style="margin-left: 7%;">
+  <tr>
+      <td>
+          <div id="divFoto" style="border: 1px solid black; width: 150px; height: 150px; float: left;">
+              <img src="<?php echo $imagen; ?>" width="148" height="148"/>
+          </div>
+      </td>
+      <td>
+          <h3 align="center"><?php echo $primernombre.' '.$segundonombre.' '.$primerapellido.' '.$segundoapellido;?></h3> 
+          <br/>
+          <h6><blockquote><?php echo $descripcion; ?></blockquote></h6>                
+      </td>
+  </tr>
+</table>
     
 <br/>  
 <center>
-    <table style="width:75%; border-spacing:0; border-collapse:collapse;">
+    <table style="width:90%; border-spacing:0; border-collapse:collapse;">
         <tr>
             <td style="width:25%">
                 <div>
+                    <div style="padding-top:30px" class="gradientBoxesWithOuterShadows">
+                        <span style="font-size: 17pt"> <img src='../img/friends.png'/> &nbsp;&nbsp; <b>Amigos</b></span><br/>
+                        <table>
+                            <?php 
+                                if(count($amigosGrafo2)>0)
+                                {
+                                    foreach($amigosGrafo2 as $amigosCompletos2)
+                                    {
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='".$amigosCompletos2[0]['users']['foto']."' width='60' heigth='60' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
+                                    }
+                                }
+                                else 
+                                {
+                                    echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'>No tienes amigos</td></tr>";
+                                }
+                            ?>
+                        </table>                            
+                    </div>
+                    <br/>
                     <div style="padding-top:30px" class="gradientBoxesWithOuterShadows">
                         <table>
                             <tr>
@@ -647,31 +667,13 @@
                     </div>
                     <div style="clear: both;"></div>
                     <div style="clear: both;"></div> 
-                    <br/>
-                    <div style="padding-top:30px" class="gradientBoxesWithOuterShadows">
-                        <span style="font-size: 17pt"> <img src='../img/friends.png'/> &nbsp;&nbsp; <b>Amigos</b></span><br/>
-                        <table>
-                            <?php 
-                                if(count($amigosGrafo2)>0)
-                                {
-                                    foreach($amigosGrafo2 as $amigosCompletos2)
-                                    {
-                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='".$amigosCompletos2[0]['users']['foto']."' width='60' heigth='60' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
-                                    }
-                                }
-                                else 
-                                {
-                                    echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'>No tienes amigos</td></tr>";
-                                }
-                            ?>
-                        </table>                            
-                    </div>                     
+                    <br/>                    
                 </div>
             </td>
             <td style="width:55%; vertical-align: top; padding-left: 20px; ">
                 <div style="padding-left: 2%;" class="gradientBoxesWithOuterShadows">
                     <span style="font-size: 17pt"> <img src='../img/media.jpg'/> &nbsp;&nbsp; <b>Contenido Multimedia</b></span>
-                    <div id="accordion" style="margin-left:10%;padding-top:10px;">
+                    <div id="accordion" style="margin-left:1%;padding-top:10px;">
                         <h3 style="color: #1ABC9C"> <span class="fui-photo"></span>&nbsp;&nbsp; FOTOS</h3>
                         <div>
                             <a style="float: right; width: 155px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogo();"> <span class="fui-photo"></span> Agregar Album </a>

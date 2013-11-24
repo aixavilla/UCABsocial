@@ -3,29 +3,51 @@
     class Album extends AppModel {
         public $name = 'Album';
     
+        
         public function listarAlbums($variable)
         {
-            /**/
-            return $this->query("SELECT * FROM albums where (fkUsers = ".$variable.");");
+            try
+            {
+                return $this->query("SELECT * FROM albums where (fkUsers = ".$variable.");");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando los albums con el valor ".$variable." - La excepcion es: "+$ex);
+                throw new Exception('Error en el listar albums');
+            }
           
         }
         
         public function agregarNuevoAlbum($atributos)
         {
-          if($this->query("INSERT INTO albums (created, nombre, privacidad, fkUsers) VALUES (NOW(), '".$atributos[0]."', '".$atributos[1]."',".$atributos[2].");"))
-          {
-              return 1;
-          }
-          else
-          {
-             return 0;      
-          }
+            try
+            {
+                if($this->query("INSERT INTO albums (created, nombre, privacidad, fkUsers) VALUES (NOW(), '".$atributos[0]."', '".$atributos[1]."',".$atributos[2].");"))
+                {
+                    return 1;
+                }
+                else{
+                    return 0;
+                }
+            }
+            catch (Exception $excep)
+            {
+                $this->log("Se produjo un error registrando el album ".$atributos[1]."en el sistema - La exccepcion es: "+$excep);
+                throw new Exception('Error agregando nuevos albums');    
+            }
         }
 
         public function eliminarAlbum($idAlbum)
         {
-            $this->query("delete from albums where id = ".$idAlbum.";");       
+            try
+            {
+                $this->query("delete from albums where id = ".$idAlbum.";");   
+            }
+            catch (Exception $excep)
+            {
+                $this->log("Se produjo un error eliminado el album ".$idAlbum."en el sistema - La exccepcion es: "+$excep);
+                throw new Exception('Error en el eliminar album');     
+            }            
         }        
-    }
-                
+    }                
 ?>

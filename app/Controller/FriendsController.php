@@ -2,14 +2,21 @@
 
 class FriendsController extends AppController {
     
+    /*
+     * Funcion que nos permite listar los amigos de un usuario en particular
+     * con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
+     * $variable en la funcion listarAmigos (model)
+     */
     public function listarAmigos($variable)
     {
-        /*Funcion que nos permite listar los amigos de un usuario en particular
-         con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
-         $variable en la funcion listarAmigos (model)*/
-        $this->loadModel("Friend");
-        $Usuarios = $this->Friend->listarAmigos($variable);
-        return $Usuarios;  
+        try{
+            $this->loadModel("Friend");
+            $Usuarios = $this->Friend->listarAmigos($variable);
+            return $Usuarios;
+        } catch (Exception $ex) {
+            $this->log("");
+        }
+          
     }
 
     public function enEspera($variable, $variable2)
