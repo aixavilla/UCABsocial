@@ -46,8 +46,12 @@ class PagesController extends AppController {
  * @throws NotFoundException When the view file could not be found
  *	or MissingViewException in debug mode.
  */
+        /*
+         * Funcion que nos redirecciona a la pagina de inicio
+         */
 	public function display() {
-            /*Funcion que nos redirecciona a la pagina de inicio*/
+           
+            try{
 		$path = func_get_args();
 
 		$count = count($path);
@@ -87,14 +91,22 @@ class PagesController extends AppController {
                     {
                         $this->redirect(array('controller' => 'Registro', 'action' => 'perfil'));
                     }                     
-                }                 
+                }
+            }catch(Exception $ex){
+                $this->log("Ocurrio un error al intertar cargar nuevamente la pagina de inicio de la red social");
+            }
 	}
         
+        /*
+         * Nos muestra los terminos y condiciones para poder autenticar al usuario una vez aceptados los mismos
+         */
         public function terminos() 
         {
-            /*Nos muestra los terminos y condiciones para poder autenticar al usuario una vez aceptados los 
-             * mismos*/
-            $this->layout='paginas'; 
+            try{
+                $this->layout='paginas'; 
+            }catch(Exception $ex){
+                $this->log("Ocurrio un error al autentificar el usuario una vez aceptados los terminos y condiciones de la red social");
+            }
             
         }
 }

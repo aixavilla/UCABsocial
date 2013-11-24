@@ -14,111 +14,145 @@ class FriendsController extends AppController {
             $Usuarios = $this->Friend->listarAmigos($variable);
             return $Usuarios;
         } catch (Exception $ex) {
-            $this->log("");
+            $this->log("No se pudieron mostrar los amigos del usuario"+$variable);
         }
           
     }
 
+    /*
+     * Funcion que nos permite verificar si es un amigo pendiente de aceptar
+     */
     public function enEspera($variable, $variable2)
     {
-       /*Funcion que nos permite verificar si es un amigo pendiente de aceptar*/
-        $this->loadModel("Friend");
-        $enEspera = $this->Friend->enEspera($variable, $variable2);
-        return $enEspera;  
-    }     
+        try{
+           $this->loadModel("Friend");
+            $enEspera = $this->Friend->enEspera($variable, $variable2);
+            return $enEspera;  
+        }
+        catch(Exception $ex){
+            $this->log("Error al consultar si existia solitudes pendiente entro los usuario" .$variable. "y".$variable2."");
+        }
+    }
     
+    /*
+     * Funcion que nos permite listar las solicitudes de amigos de un usuario en particular
+     * con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
+     * $variable en la funcion listarSolicitudes (model)
+     */
     public function listarSolicitudes($variable)
     {
-       /*Funcion que nos permite listar las solicitudes de amigos de un usuario en particular
-         con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
-         $variable en la funcion listarSolicitudes (model)*/
+        try{
         $this->loadModel("Friend");
         $Solicitudes = $this->Friend->listarSolicitudes($variable);
         return $Solicitudes;  
+        }catch(Exception $ex){
+            $this->log("Error al mostrar las solicitudes pendientes del usario"+$variable);
+        }
     }    
     
+    /*
+     * Funcion que nos permite registrar un amigo a un usuario en particular
+     * con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
+     * $atributos en la funcion agregarAmigosGrafo (model), los URL vienen de la funcion ajax de javascript 
+     */
     public function registrarAmigo() 
     {
-        /*Funcion que nos permite registrar un amigo a un usuario en particular
-         con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
-         $atributos en la funcion agregarAmigosGrafo (model), los URL vienen de la funcion ajax de javascript*/
-        $atributos = array(
-            0 => $this->params['url']['fkUsers'],
-            1 => $this->params['url']['fkUsers2'],              
-        );
-        
-        $this->loadModel("Friend");  
-        $consulta = $this->Friend->agregasAmigosGrafo($atributos);
-        if(isset($consulta[0]))
-        {
-            $response = 1;
+        try{
+            $atributos = array(
+                0 => $this->params['url']['fkUsers'],
+                1 => $this->params['url']['fkUsers2'],              
+            );
+
+            $this->loadModel("Friend");  
+            $consulta = $this->Friend->agregasAmigosGrafo($atributos);
+            if(isset($consulta[0]))
+                {
+                    $response = 1;
+                }
+            else 
+                {
+                    $response = 0;
+                }
+
+            $this->set('respuesta', $response);                 
+            $this->layout = 'ajax'; 
+        }  catch (Exception $ex){
+            $this->log("Error al aegregar un amigo al grafo");
         }
-        else 
-        {
-            $response = 0;
-        }
-        
-        $this->set('respuesta', $response);                 
-        $this->layout = 'ajax'; 
-        
     }
 
+    /*
+     * Funcion que se encarga de eliminar a un amigo del grafo social
+     */
     public function eliminarAmigoGrafo()
-   {
-       $atributos = array(
-           0 => $this->params['url']['fkUsers'],
-           1 => $this->params['url']['fkUsers2'],              
-       );
-       
-       $this->loadModel("Friends");
-       
-       $consulta = $this->Friend->eliminarAmigo($atributos[0],$atributos[1]);
-       if($consulta != 1)
-       {
-           $response = 1;
-           echo ("amistad eliminada");
+    {
+        try{
+            $atributos = array(
+               0 => $this->params['url']['fkUsers'],
+               1 => $this->params['url']['fkUsers2'],              
+            );
+
+           $this->loadModel("Friends");
+
+           $consulta = $this->Friend->eliminarAmigo($atributos[0],$atributos[1]);
+           if($consulta != 1)
+           {
+               $response = 1;
+               echo ("amistad eliminada");
+               }
+           else 
+           {
+               $response = 0;
+               echo ("amistad no existe");
            }
-       else 
-       {
-           $response = 0;
-           echo ("amistad no existe");
-       }
-       $this->set('respuesta', $response);                 
-       $this->layout = 'ajax';
-       
+           $this->set('respuesta', $response);                 
+           $this->layout = 'ajax';
+        
+           
+        }catch(Exception $ex){
+            $this->log("Se produjo un error al eliminar un amigo de tu grafo social");
+        }
     }
     
+    /*
+     * Funcion que nos permite aceptar como amigo a un usuario en particular
+     * con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
+     * $atributos en la funcion aceptarAmigos (model), los URL vienen de la funcion ajax de javascript
+     */
     public function aceptarAmigo() 
     {
-        /*Funcion que nos permite aceptar como amigo a un usuario en particular
-         con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
-         $atributos en la funcion aceptarAmigos (model), los URL vienen de la funcion ajax de javascript*/
-        $atributos = array(
-            0 => $this->params['url']['fkUsers'],
-            1 => $this->params['url']['fkUsers2'],              
-        );
-        
-        $this->loadModel("Friend");  
-        $consulta = $this->Friend->aceptarAmigos($atributos);
-        if(isset($consulta[0]))
-        {
-            $response = 1;
+        try{
+            $atributos = array(
+                0 => $this->params['url']['fkUsers'],
+                1 => $this->params['url']['fkUsers2'],              
+            );
+
+            $this->loadModel("Friend");  
+            $consulta = $this->Friend->aceptarAmigos($atributos);
+            if(isset($consulta[0]))
+            {
+                $response = 1;
+            }
+            else 
+            {
+                $response = 0;
+            }
+
+            $this->set('respuesta', $response);                 
+            $this->layout = 'ajax'; 
+        }catch(Exception $ex){
+            $this->log("Error al aceptar la peticion de ingreso a el grafo social");
         }
-        else 
-        {
-            $response = 0;
-        }
-        
-        $this->set('respuesta', $response);                 
-        $this->layout = 'ajax'; 
-        
     }   
     
+    /*
+     * Funcion que nos permite rechazar la solicitud de amistad de un usuario en particular
+     * con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
+     * $atributos en la funcion rechazarAmigos (model), los URL vienen de la funcion ajax de javascript
+     */
     public function rechazarAmigo() 
     {
-        /*Funcion que nos permite rechazar la solicitud de amistad de un usuario en particular
-         con el this->loadModel hacemos una llamada al modelo friend para obtener el valor de 
-         $atributos en la funcion rechazarAmigos (model), los URL vienen de la funcion ajax de javascript*/
+        try{
         $atributos = array(
             0 => $this->params['url']['fkUsers'],
             1 => $this->params['url']['fkUsers2'],              
@@ -137,7 +171,9 @@ class FriendsController extends AppController {
         
         $this->set('respuesta', $response);                 
         $this->layout = 'ajax'; 
-        
+        }catch(Exception $ex){
+            $this->log("Error al rechazar la solicitud de amistad");
+        }
     }       
 }
 ?>

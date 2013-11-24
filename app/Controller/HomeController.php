@@ -8,90 +8,118 @@ class HomeController extends AppController {
     public $name = 'Home';
     public $uses=array();
  
+    /*
+     * Controlador index, para que muestre la vista index
+     */
     public function index(){
-        //Controlador index, para que muestre la vista index
+
+        try{
         $this->layout=false;
+        }catch(Exception $ex)
+        {
+            $this->log("Ocurrio un error al monstrar la vista principal");
+        }
     }
  
+    /* 
+     * Login de facebook, nos conectamos a traves de oauth
+     */
     public function login()
     {
-        /*login de facebook, nos conectamos a traves de oauth*/
-        $this->layout=false;
-        
-        Configure::load('facebook');
-        $appId=Configure::read('Facebook.appId');
-        $app_secret=Configure::read('Facebook.secret');
-        $facebook = new Facebook(array(
-                'appId'     =>  $appId,
-                'secret'    => $app_secret,
-                ));
-        $loginUrl = $facebook->getLoginUrl(array(
-            'scope'         => 'email,read_stream, publish_stream, user_birthday, user_location, user_work_history, user_hometown, user_photos',
-            'redirect_uri'  => BASE_URL.'Home/facebook_connect',
-            'display'=>'popup'
-            ));
+        try{
+            $this->layout=false;
 
-        $this->redirect($loginUrl);
+            Configure::load('facebook');
+            $appId=Configure::read('Facebook.appId');
+            $app_secret=Configure::read('Facebook.secret');
+            $facebook = new Facebook(array(
+                    'appId'     =>  $appId,
+                    'secret'    => $app_secret,
+                    ));
+            $loginUrl = $facebook->getLoginUrl(array(
+                'scope'         => 'email,read_stream, publish_stream, user_birthday, user_location, user_work_history, user_hometown, user_photos',
+                'redirect_uri'  => BASE_URL.'Home/facebook_connect',
+                'display'=>'popup'
+                ));
+
+            $this->redirect($loginUrl);
+        }catch(Exception $ex){
+            $this->log("Error que ocurrio por conectarnos con el login de facebook");
+        }
     }
  
+    
+    /* 
+     * Autenticar la session de facebook, valida las credenciales del  usuario de facebook, 
+     * devuelve el token de session y el id de usuario de facebook, entre otros atributos
+     */
     public function facebook_connect()
     {
-        /*Autenticar la session de facebook, valida las credenciales del  usuario de facebook, 
-         * devuelve el token de session y el id de usuario de facebook, entre otros atributos*/
-        $this->layout = 'paginas';
-        
-        Configure::load('facebook');
-        $appId=Configure::read('Facebook.appId');
-        $app_secret=Configure::read('Facebook.secret');
- 
-         $facebook = new Facebook(array(
-        'appId'     =>  $appId,
-        'secret'    => $app_secret,
-        ));
+        try{
+            $this->layout = 'paginas';
 
-        $this->Session->write('Facebook',$facebook);
-         
-        $user = $facebook->getUser();
-        $this->Session->write('Usuario',$user);
-                        
-        if($user)
-        {
-            try
+            Configure::load('facebook');
+            $appId=Configure::read('Facebook.appId');
+            $app_secret=Configure::read('Facebook.secret');
+
+             $facebook = new Facebook(array(
+            'appId'     =>  $appId,
+            'secret'    => $app_secret,
+            ));
+
+            $this->Session->write('Facebook',$facebook);
+
+            $user = $facebook->getUser();
+            $this->Session->write('Usuario',$user);
+
+            if($user)
             {
-                $user_profile = $facebook->api('/me');
-                $params = array('next' => BASE_URL.'Home/facebook_logout');
-                $logout =$facebook->getLogoutUrl($params);
-                $this->Session->write('User',$user_profile);
-                $this->Session->write('logout',$logout);
-                
-                $this->loadModel('User');
-                $usuarioF = $this->Session->read('User');                
-
-                $validar = $this->User->find('first', array('conditions' => array('User.facebookid' => $usuarioF['id'])));
-                $this->Session->write('chequeo',$validar);                
-
-                if(!empty($validar))
+                try
                 {
-                    $this->redirect(array('controller' => 'Registro', 'action' => 'puente'));
-                } 
+                    $user_profile = $facebook->api('/me');
+                    $params = array('next' => BASE_URL.'Home/facebook_logout');
+                    $logout =$facebook->getLogoutUrl($params);
+                    $this->Session->write('User',$user_profile);
+                    $this->Session->write('logout',$logout);
+
+                    $this->loadModel('User');
+                    $usuarioF = $this->Session->read('User');                
+
+                    $validar = $this->User->find('first', array('conditions' => array('User.facebookid' => $usuarioF['id'])));
+                    $this->Session->write('chequeo',$validar);                
+
+                    if(!empty($validar))
+                    {
+                        $this->redirect(array('controller' => 'Registro', 'action' => 'puente'));
+                    } 
+                }
+                catch(FacebookApiException $e){
+                    error_log($e);
+                    $user = NULL;
+                }
             }
-            catch(FacebookApiException $e){
-                error_log($e);
-                $user = NULL;
-            }
+           else
+           {
+                $this->Session->setFlash('Sorry.Please try again','default',array('class'=>'msg_req'));
+           }
+        }catch(Exception $ex)
+        {
+            $this->log("Ocurrio un error al validar la sesion de facebook con la que ingreso el usuario");
         }
-       else
-       {
-            $this->Session->setFlash('Sorry.Please try again','default',array('class'=>'msg_req'));
-       }
    }
  
+   /*
+    * Funcion que desconecta de facebook y borra la variables de session
+    */
    public function facebook_logout(){
-       /*Funcion que desconecta de facebook y borra la variables de session*/
+       try{
         $this->layout = 'paginas';
         $this->Session->delete('User');
         $this->Session->delete('logout');
         session_unset();
+       }catch(Exception $ex){
+           $this->log("Ocurrio un error al intentar desconectar la sesion de facebook");
+       }
    }   
    
     public function google_login()
