@@ -12,7 +12,7 @@ class PerfilController extends AppController{
            if(isset($_SESSION['User']))
            {
                $this->layout='paginas'; 
-               $arreglo = $this->params['url'];
+               $arreglo = $this->params['url'];               
                $this->loadModel("User");           
                $Usuario = $this->User->getPerfil($arreglo['user']);
                $this->set('Usuariovista',$Usuario);
@@ -91,6 +91,7 @@ class PerfilController extends AppController{
            }
         }catch(Exception $ex){
             $this->log("Error al visualizar el perfil de un usuario seleccionado");
+            $this->set('error',"error");            
         }
     } 
     
@@ -113,6 +114,14 @@ class PerfilController extends AppController{
             $this->log("Error al consultar los amigos del grafo");
         }
     }
+    
+    public function album() 
+    {
+        $this->layout='paginas'; 
+        $arreglo = $this->params['url'];    
+        $this->loadModel("Album");           
+        $fotos = $this->Album->listarContenidoAlbum($arreglo['code']);        
+    }    
 }
 
 ?>

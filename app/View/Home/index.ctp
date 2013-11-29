@@ -3,9 +3,19 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Login with Facebook In CakePHP</title>
+
 <?php
-echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js');
-echo $this->Html->script('oauthpopup');  ?>
+
+    if(isset($error))
+    {
+        header("Location: /UCABsocial/Home/error");
+        exit;        
+    }
+
+    echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js');
+    echo $this->Html->script('oauthpopup');  
+
+?>
 <script type="text/javascript">
 $(document).ready(function(){
     $('#facebook').click(function(e){

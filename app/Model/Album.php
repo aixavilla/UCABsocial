@@ -48,6 +48,20 @@
                 $this->log("Se produjo un error eliminado el album ".$idAlbum."en el sistema - La exccepcion es: "+$excep);
                 throw new Exception('Error en el eliminar album');     
             }            
+        }  
+        
+        public function listarContenidoAlbum($variable)
+        {
+            try
+            {
+                return $this->query("SELECT R.* FROM records R, historic H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id);");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando los registros del album con el valor ".$variable." - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error al listar el contenido del album');
+            }
+          
         }        
     }                
 ?>

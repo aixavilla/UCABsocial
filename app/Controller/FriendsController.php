@@ -15,6 +15,7 @@ class FriendsController extends AppController {
             return $Usuarios;
         } catch (Exception $ex) {
             $this->log("No se pudieron mostrar los amigos del usuario"+$variable);
+            $this->set('error',"error");            
         }
           
     }

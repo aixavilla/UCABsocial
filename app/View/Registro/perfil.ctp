@@ -1,5 +1,11 @@
 <?php
 
+    if(isset($error))
+    {
+        header("Location: /UCABsocial/Home/error");
+        exit;        
+    }
+
     if(isset($Usuariovista[0]['users']['id']))
     {
         $idUserP = $Usuariovista[0]['users']['id'];  
@@ -154,6 +160,8 @@
     }       
     
     $logout = $this->Session->read('logout');
+    echo $this->Html->css('bjqs'); 
+    echo $this->Html->script('bjqs-1.3');     
     
 ?>
 
@@ -347,6 +355,12 @@
         $("#dialog-agregar").dialog("open");                                                                             
     }
     
+    function AbrirDialogoEditarAlbum(idAlbum)
+    {
+        $("#txtIdAlbum").val(idAlbum);        
+        $("#dialog-editar").dialog("open");                                                                             
+    }
+    
     function AbrirDialogoEliminar(idAlbum)
     {
         $("#txtAlbumEliminar").val(idAlbum); 
@@ -381,6 +395,11 @@
                     }                            
                 }
         });            
+    }
+    
+    function AgregarAlbum() 
+    {
+        
     }
     
     function EliminarAlbum() 
@@ -504,7 +523,26 @@
               location.reload();
             }
           }
-        });         
+        }); 
+        
+        $( "#dialog-editar" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          closeOnEscape: false,     
+          width: 1000,
+          height: 700,              
+          buttons: {
+            Cerrar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });  
+        
+        $('#banner-fade').bjqs({
+            'height' : 320,
+            'width' : 620,
+            'responsive' : true
+        });
         
 //        $('#locations').focusout(function() {
 //                $('#locations').val('');
@@ -684,7 +722,7 @@
                                     {
                                         foreach($albums as $album)
                                         {
-                                            echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/album.jpg' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/album?code=".$album['albums']['id']."'>".$album['albums']['nombre']." <a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";
+                                            echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/album.jpg' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoEditarAlbum(".$album['albums']['id'].")'>".$album['albums']['nombre']." <a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";
                                         }
                                     }
                                     else
@@ -751,4 +789,14 @@
     <input id="txtAlbumEliminar" type="hidden" value=""/>
     <span id="spanMensajeDialogoInfoEliminar">¿Realmente desea eliminar este album?</span>
   </p>
+</div>
+
+<div id="dialog-editar" title="Configuración del Album">
+    <input id="txtIdAlbum" type="hidden" value=""/>
+    <div id="my-slideshow">
+        <ul class="bjqs">
+            <li><img src="http://blog.kir.com/Houston_Astros2.jpg"></li>
+            <li><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Houston_astros_logo.png/250px-Houston_astros_logo.png"></li>
+        </ul>
+    </div>   
 </div>

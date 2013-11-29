@@ -106,6 +106,7 @@ class PagesController extends AppController {
                 $this->layout='paginas'; 
             }catch(Exception $ex){
                 $this->log("Ocurrio un error al autentificar el usuario una vez aceptados los terminos y condiciones de la red social");
+                $this->set('error',"error");                 
             }
             
         }

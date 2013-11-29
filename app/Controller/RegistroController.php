@@ -27,6 +27,7 @@ class RegistroController extends AppController
             }
         }catch(Exception $ex){
             $this->log("Error al cargar el perfil de usuario o el formulario para unirse a la red social");
+            $this->set('error',"error");
         }
     }
     
@@ -42,77 +43,78 @@ class RegistroController extends AppController
             }        
          }catch(Exception $ex){
              $this->log("Error al realizar redireccionamiento");
+             $this->set('error',"error");
          }
     }
-    
-    
-   /*
-    * $_SEESSION evaluamos una variable de seccion y con el isset verificamos que esta variable este 
-    * inicializada y no sea nula para poder cargar los datos del perfil de usuario
-    */
-   public function perfil()
-   {
-       try{
-           if(isset($_SESSION['User']))
-           {
-               $this->layout='paginas'; 
-               $ses_user=$this->Session->read('User');
-               $this->loadModel("User");
-               $Usuario=$this->User->getUser($ses_user['id']);
-               $this->Session->write('usernameConectado', $Usuario[0]['users']['username']);           
-               $this->set('Usuariovista',$Usuario);
-             /* Una vez el usuario este autenticado cargamos los amigos del mismo, desde el controlador Friends*/
-               App::import('Controller', 'Friends');
-               $amigos = new FriendsController;
-               $amigosvista = $amigos->listarAmigos($Usuario[0]['users']['id']); 
-               //$this->set('AmigosVista', $amigosvista);
-
-               $amigosFinal = array();
-               foreach($amigosvista as $amigo)
-               {
-                   if($amigo['friends']['fkUsers']== $Usuario[0]['users']['id'])
-                   {   
-                        $amigosFinal[] = $amigo['friends']['fkUsers2'];
-                   } 
-                   else
-                   {
-                       $amigosFinal[]=$amigo['friends']['fkUsers'];  
-                   }
-                }
-                $amigosGrafo = $this->amigosGrafo($amigosFinal);
-                $this->Session->write('amigosG',$amigosGrafo); 
-                $this->set('amigosGrafo2',$amigosGrafo);
-                /*Cargar solicitudes de nuevas amistades del usuario registrado, creando luego de recorrer el arreglo $solicitudvista,
-                 *  un arreglo final $solicitudesGrafo con todas las solcitudes validadas*/
-               $solicitudesvista = $amigos->listarSolicitudes($Usuario[0]['users']['id']);
-
-               $solicitudes = array();
-               foreach($solicitudesvista as $solicitud)
-               {
-                   if($solicitud['friends']['fkUsers']== $Usuario[0]['users']['id'])
-                   {   
-                        $solicitudes[] = $solicitud['friends']['fkUsers2'];
-                   } 
-                }
-                $solicitudesGrafo = $this->amigosGrafo($solicitudes);
-                $this->set('solicitudesGrafo',$solicitudesGrafo);           
-
+       
+    /*
+     * $_SEESSION evaluamos una variable de seccion y con el isset verificamos que esta variable este 
+     * inicializada y no sea nula para poder cargar los datos del perfil de usuario
+     */
+    public function perfil()
+    {
+        try{
+            if(isset($_SESSION['User']))
+            {
+                $this->layout='paginas'; 
+                $ses_user=$this->Session->read('User');
                 $this->loadModel("User");
-                $todosUsuario = $this->User->usuariosCompletos();
-                $this->set('todos',$todosUsuario);
+                $Usuario=$this->User->getUser($ses_user['id']);
+                $this->Session->write('usernameConectado', $Usuario[0]['users']['username']);           
+                $this->set('Usuariovista',$Usuario);
+              /* Una vez el usuario este autenticado cargamos los amigos del mismo, desde el controlador Friends*/
+                App::import('Controller', 'Friends');
+                $amigos = new FriendsController;
+                $amigosvista = $amigos->listarAmigos($Usuario[0]['users']['id']); 
+                //$this->set('AmigosVista', $amigosvista);
 
-                $this->loadModel("Album");
-                $albums = $this->Album->listarAlbums($Usuario[0]['users']['id']);
-                $this->set('albums',$albums);            
-           }          
-           else 
-           {
-                $this->redirect(array('controller' => 'Pages', 'action' => 'display'));       
-           }
-       }catch(Exception $ex){
-           $this->log("Error al tratar de hacer el ingreso del usuario a la red social");
-       }
-    }
+                $amigosFinal = array();
+                foreach($amigosvista as $amigo)
+                {
+                    if($amigo['friends']['fkUsers']== $Usuario[0]['users']['id'])
+                    {   
+                         $amigosFinal[] = $amigo['friends']['fkUsers2'];
+                    } 
+                    else
+                    {
+                        $amigosFinal[]=$amigo['friends']['fkUsers'];  
+                    }
+                 }
+                 $amigosGrafo = $this->amigosGrafo($amigosFinal);
+                 $this->Session->write('amigosG',$amigosGrafo); 
+                 $this->set('amigosGrafo2',$amigosGrafo);
+                 /*Cargar solicitudes de nuevas amistades del usuario registrado, creando luego de recorrer el arreglo $solicitudvista,
+                  *  un arreglo final $solicitudesGrafo con todas las solcitudes validadas*/
+                $solicitudesvista = $amigos->listarSolicitudes($Usuario[0]['users']['id']);
+
+                $solicitudes = array();
+                foreach($solicitudesvista as $solicitud)
+                {
+                    if($solicitud['friends']['fkUsers']== $Usuario[0]['users']['id'])
+                    {   
+                         $solicitudes[] = $solicitud['friends']['fkUsers2'];
+                    } 
+                 }
+                 $solicitudesGrafo = $this->amigosGrafo($solicitudes);
+                 $this->set('solicitudesGrafo',$solicitudesGrafo);           
+
+                 $this->loadModel("User");
+                 $todosUsuario = $this->User->usuariosCompletos();
+                 $this->set('todos',$todosUsuario);
+
+                 $this->loadModel("Album");
+                 $albums = $this->Album->listarAlbums($Usuario[0]['users']['id']);
+                 $this->set('albums',$albums);            
+            }          
+            else 
+            {
+                 $this->redirect(array('controller' => 'Pages', 'action' => 'display'));       
+            }
+        }catch(Exception $ex){
+            $this->log("Error al tratar de hacer el ingreso del usuario a la red social");
+            $this->set('error',"error");           
+        }
+     }
     
     /* 
      * Muestra todos los campos que se necesitan para registrar los usuarios en la base de datos
@@ -130,9 +132,9 @@ class RegistroController extends AppController
         } 
        }catch(Exception $ex){
            $this->log("Error al cargar el formulario de nuevo ingreso a la red social");
+           $this->set('error',"error");           
        }
     }     
-    
     
     /*
      * Funcion que nos permite al usuario editar los datos de su perfil, 
@@ -171,6 +173,7 @@ class RegistroController extends AppController
            }
         }catch(Exception $ex){
             $this->log("Error al editar el perfil del usuario");
+            $this->set('error',"error");            
         }
     } 
     
@@ -196,6 +199,7 @@ class RegistroController extends AppController
             $this->layout = 'ajax';     
         }catch(Exception $ex){
             $this->log("Se produjo un error al intentar mostar los usuarios registrados en la red social");
+           $this->set('error',"error");            
         }
     }
     
@@ -212,10 +216,10 @@ class RegistroController extends AppController
             $this->set('friendsList', $terms);        
         }catch(Exception $ex){
             $this->log("Error al consultar los usuarios en la red social mediante el buscador");
+            $this->set('error',"error");
         }
     }
-    
-    
+       
     /*
      * Se valida el username del usuario invocando en el modelo User la funcion validateUsername, 
      * permitiendonos ver si ese username se encuentra disponible, o ya pertenece a otro usuario
@@ -237,6 +241,7 @@ class RegistroController extends AppController
             $this->layout = 'ajax'; 
         }catch(Exception $ex){
             $this->log("Error al intentar verificar si el username colocado por el usuario es valido");
+            $this->set('error',"error");            
         }
         
     }     
@@ -278,6 +283,7 @@ class RegistroController extends AppController
       }catch(Exception $ex)
       {
           $this->log("Error al intentar realizar el registro de un nuevo usuario");
+          //$this->set('error',"error");          
       }
     } 
     
@@ -309,6 +315,7 @@ class RegistroController extends AppController
 
             $this->loadModel("User");  
             $consulta = $this->User->editarUsuario($atributos);     
+            $this->Session->write('editValue', $consulta);
             if($consulta)
             {
                 $response = 1;
@@ -322,6 +329,7 @@ class RegistroController extends AppController
         }catch(Exception $ex)
         {
             $this->log("Error producido al realizar un cambio en los datos del usuario");
+            $this->set('error',"error");             
         }
         
     } 
@@ -341,7 +349,7 @@ class RegistroController extends AppController
             }
             return $amigosGrafo;
         }catch(Exception $ex){
-            $this->lod("Se produjo un error al cargar los amigos de el usuario registrado actualmente");
+            $this->lod("Se produjo un error al cargar los amigos de el usuario registrado actualmente");           
         }
     }    
 }

@@ -1,5 +1,11 @@
 <?php
 
+    if(isset($error))
+    {
+        header("Location: /UCABsocial/Home/error");
+        exit;        
+    }
+
     $usernameConectado = $this->Session->read('usernameConectado');
     $usuario_session = $this->Session->read('User');
     $usuario_Valores = $this->Session->read('chequeo');

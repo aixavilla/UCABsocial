@@ -1,4 +1,11 @@
 <?php
+
+    if(isset($error))
+    {
+        header("Location: /UCABsocial/Home/error");
+        exit;        
+    }
+
     $ses_user=$this->Session->read('User');
     $logout = $this->Session->read('logout');
     

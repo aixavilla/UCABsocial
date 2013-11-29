@@ -13,7 +13,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de obtener los datos del perfil del Usuario ".$variable."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de obtener los datos del perfil del Usuario ".$variable."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error obteniendo los datos del perfil');      
             }             
         }
@@ -26,7 +26,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de obtener la informacion del Usuario ".$variable."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de obtener la informacion del Usuario ".$variable."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error obteniendo los datos del usuario');     
             }             
         }        
@@ -39,7 +39,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de validar la existencia del nombre de usuario ".$variable."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de validar la existencia del nombre de usuario ".$variable."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error validando el nombre de usuario');      
             }             
         } 
@@ -52,7 +52,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de obtener los datos de los amigos del Usuario ".$variable."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de obtener los datos de los amigos del Usuario ".$variable."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error obteniendo los ndatos de los amigos');      
             }             
         }
@@ -65,7 +65,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de obtener el listado de solicitudes de amista para el Usuario ".$variable."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de obtener el listado de solicitudes de amista para el Usuario ".$variable."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error obteniendo el listado de usuarios de la red social');     
             }             
         }
@@ -80,7 +80,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de obtener los nombres y apellidos del Usuario ".$variable."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de obtener los nombres y apellidos del Usuario ".$variable."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error obteniendo los nombres y apellidos del usuario');      
             }             
         }        
@@ -94,7 +94,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de registrar al Usuario ".$atributos[1]."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de registrar al Usuario ".$atributos[1]."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error registrando al usuario');      
             }             
         } 
@@ -103,11 +103,12 @@
         {
             try
             {
-                return $this->query("UPDATE users SET nombre='".$atributos[0]."', nombre2='".$atributos[1]."', apellido='".$atributos[2]."', apellido2='".$atributos[3]."', username='".$atributos[6]."', email='".$atributos[7]."', telefono='".$atributos[10]."', birthday='".$atributos[5]."', genero='".$atributos[4]."', descripcion='".$atributos[9]."', ubicacion='".$atributos[8]."', privacidad='".$atributos[11]."', modified=NOW(), urlFacebook='".$atributos[12]."', urlTwitter='".$atributos[13]."', urlLinkedin='".$atributos[14]."' WHERE id = ".$atributos[15].";");
+                $valor = $this->query("UPDATE users SET nombre='".$atributos[0]."', nombre2='".$atributos[1]."', apellido='".$atributos[2]."', apellido2='".$atributos[3]."', username='".$atributos[6]."', email='".$atributos[7]."', telefono='".$atributos[10]."', birthday='".$atributos[5]."', genero='".$atributos[4]."', descripcion='".$atributos[9]."', ubicacion='".$atributos[8]."', privacidad='".$atributos[11]."', modified=NOW(), urlFacebook='".$atributos[12]."', urlTwitter='".$atributos[13]."', urlLinkedin='".$atributos[14]."' WHERE id = ".$atributos[15].";");              
+                return $valor;
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error tratando de editar el perfil del Usuario ".$atributos[1]."- La exccepcion es: "+$excep);
+                $this->log("Se produjo un error tratando de editar el perfil del Usuario ".$atributos[1]."- La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error editando el perfil del usuario');      
             }             
          

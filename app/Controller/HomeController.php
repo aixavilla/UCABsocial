@@ -18,6 +18,7 @@ class HomeController extends AppController {
         }catch(Exception $ex)
         {
             $this->log("Ocurrio un error al monstrar la vista principal");
+            $this->set('error',"error");            
         }
     }
  
@@ -44,7 +45,7 @@ class HomeController extends AppController {
 
             $this->redirect($loginUrl);
         }catch(Exception $ex){
-            $this->log("Error que ocurrio por conectarnos con el login de facebook");
+            $this->log("Error que ocurrio por conectarnos con el login de facebook");           
         }
     }
  
@@ -208,7 +209,14 @@ class HomeController extends AppController {
             
         }
     }
+    
+    /*
+     * Función Error, para que muestre la página de Errores
+     */
+    public function error(){
+
+
+    }    
    
 }
-
 ?>
