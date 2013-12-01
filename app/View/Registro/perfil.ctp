@@ -159,9 +159,7 @@
         $privacidadUsuario = '';
     }       
     
-    $logout = $this->Session->read('logout');
-    echo $this->Html->css('bjqs'); 
-    echo $this->Html->script('bjqs-1.3');     
+    $logout = $this->Session->read('logout'); 
     
 ?>
 
@@ -397,11 +395,6 @@
         });            
     }
     
-    function AgregarAlbum() 
-    {
-        
-    }
-    
     function EliminarAlbum() 
     {
         var valor = $("#txtAlbumEliminar").val();    
@@ -537,12 +530,6 @@
             }            
           }
         });  
-        
-        $('#banner-fade').bjqs({
-            'height' : 320,
-            'width' : 620,
-            'responsive' : true
-        });
         
 //        $('#locations').focusout(function() {
 //                $('#locations').val('');
@@ -714,7 +701,7 @@
                     <div id="accordion" style="margin-left:1%;padding-top:10px;">
                         <h3 style="color: #1ABC9C"> <span class="fui-photo"></span>&nbsp;&nbsp; FOTOS</h3>
                         <div>
-                            <a style="float: right; width: 155px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogo();"> <span class="fui-photo"></span> Agregar Album </a>
+                            <a style="float: right; width: 170px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogo();"> <span class="fui-photo"></span> Agregar Album </a>
                             <br/><br/>
                             <table>
                                 <?php 
