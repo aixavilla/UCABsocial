@@ -8,7 +8,7 @@
 
     $usernameConectado = $this->Session->read('usernameConectado');
     $usuario_session = $this->Session->read('User');
-
+    
     $logout = $this->Session->read('logout');
     
 ?>
@@ -165,7 +165,7 @@
             <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120"> 
           </li> 
         </ul>
-        <div class="todo-search" style="width:300px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
+        <div class="todo-search" style="width:700px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
 <!--            <input class="todo-search-field" type="search" value="" placeholder="Buscar personas"  />-->
             <?php  
                 echo $this->AutoComplete->input( 
@@ -214,7 +214,7 @@
         <?php 
             foreach($friendsList as $amigosCompletos2)
             {
-                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/facebook350.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2['U']['username']."'>".$amigosCompletos2['U']['nombre']." ".$amigosCompletos2['U']['apellido']."<a></td></tr>";
+                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='".$amigosCompletos2['U']['foto']."' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2['U']['username']."'>".$amigosCompletos2['U']['nombre']." ".$amigosCompletos2['U']['apellido']."<a></td></tr>";
             }
         ?>
     </table>

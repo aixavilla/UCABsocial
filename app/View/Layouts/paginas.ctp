@@ -16,7 +16,8 @@
 		echo $this->Html->meta('icon');
 		echo $this->Html->css('bootstrap');                 
 		echo $this->Html->css('flat-ui'); 
-		echo $this->Html->css('demo');                 
+		echo $this->Html->css('demo'); 
+                
                 echo $this->Html->script('jquery.ui.touch-punch.min');
                 echo $this->Html->script('bootstrap.min');
                 echo $this->Html->script('bootstrap-select');
@@ -28,6 +29,7 @@
                 echo $this->Html->script('jquery.stacktable');
                 echo $this->Html->script('application'); 
                 echo $this->Html->script('oauthpopup');
+                echo $this->Html->script('jquery.infinitecarousel3');                
                 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');

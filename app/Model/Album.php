@@ -12,7 +12,7 @@
             }
             catch (Exception $ex)
             {
-                $this->log("Se produjo un error consultando los albums con el valor ".$variable." - La excepcion es: "+$ex);
+                $this->log("Se produjo un error consultando los albums con el valor ".$variable." - La excepcion es: "+$ex->getMessage());
                 throw new Exception('Error en el listar albums');
             }
           
@@ -32,7 +32,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error registrando el album ".$atributos[1]."en el sistema - La exccepcion es: "+$excep);
+                $this->log("Se produjo un error registrando el album ".$atributos[1]."en el sistema - La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error agregando nuevos albums');    
             }
         }
@@ -45,7 +45,7 @@
             }
             catch (Exception $excep)
             {
-                $this->log("Se produjo un error eliminado el album ".$idAlbum."en el sistema - La exccepcion es: "+$excep);
+                $this->log("Se produjo un error eliminado el album ".$idAlbum."en el sistema - La exccepcion es: "+$excep->getMessage());
                 throw new Exception('Error en el eliminar album');     
             }            
         }  
@@ -54,7 +54,7 @@
         {
             try
             {
-                return $this->query("SELECT R.* FROM records R, historic H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id);");
+                return $this->query("SELECT R.* FROM records R, historics H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id);");
             }
             catch (Exception $ex)
             {
@@ -62,6 +62,20 @@
                 throw new Exception('Error al listar el contenido del album');
             }
           
-        }        
+        } 
+        
+        public function listarComentariosAlbum($variable)
+        {
+            try
+            {
+                return $this->query("SELECT C.*, U.* FROM coments C, users U WHERE (C.fkAlbums = ".$variable.") AND (C.fkUsers = U.id);");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando los comentarios del album con el valor ".$variable." - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error al listar el contenido del album');
+            }
+          
+        }         
     }                
 ?>

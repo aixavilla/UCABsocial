@@ -120,7 +120,7 @@
     }
     else 
     {
-        $imgen = '';
+        $imagen = '';
     }    
     
     if(isset($Usuariovista[0]['users']['urlFacebook']))
@@ -355,7 +355,23 @@
     
     function AbrirDialogoEditarAlbum(idAlbum)
     {
-        $("#txtIdAlbum").val(idAlbum);        
+        $("#txtIdAlbum").val(idAlbum);      
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarContenidoAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divContenidoAlbum").html(response);
+                    $("#carousel").infiniteCarousel({});                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentarios").html(response);                    
+                }
+        });    
         $("#dialog-editar").dialog("open");                                                                             
     }
     
@@ -780,10 +796,23 @@
 
 <div id="dialog-editar" title="Configuración del Album">
     <input id="txtIdAlbum" type="hidden" value=""/>
-    <div id="my-slideshow">
-        <ul class="bjqs">
-            <li><img src="http://blog.kir.com/Houston_Astros2.jpg"></li>
-            <li><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Houston_astros_logo.png/250px-Houston_astros_logo.png"></li>
-        </ul>
-    </div>   
+    <div class="gradientBoxesWithOuterShadows">
+        <h6 style="float: left;">Contenido</h6>  
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:alert('EPA');"> <span class="fui-photo"></span> Agregar Contenido </a>        
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>        
+        <div id="divContenidoAlbum" class="jcarousel" style="padding-top: 18px;">
+            
+        </div>
+    </div> 
+    <br/>
+    <div class="gradientBoxesWithOuterShadows">
+        <h6 style="float: left;">Comentarios</h6>
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:alert('EPA');"> <span class="fui-new"></span> Agregar Comentario </a>
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>
+        <div id="divComentarios" class="gradientBoxesWithOuterShadows" style="padding-top: 18px;">
+            
+        </div>
+    </div>
 </div>
