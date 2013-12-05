@@ -161,6 +161,8 @@
     
     $logout = $this->Session->read('logout'); 
     
+    echo $this->Html->script('validCampoFranz');  
+    
 ?>
 
 <style>
@@ -374,11 +376,51 @@
         });    
         $("#dialog-editar").dialog("open");                                                                             
     }
-    
+
+    function RecargarComentarios()
+    {
+        $("#txtComentario").val("");
+        var idAlbum = $("#txtIdAlbum").val();
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentarios").html(response);                    
+                }
+        });                                                                              
+    }
+
     function AbrirDialogoEliminar(idAlbum)
     {
         $("#txtAlbumEliminar").val(idAlbum); 
         $("#dialog-eliminar").dialog("open");                                                                             
+    }
+    
+    function AbrirDialogoEliminarComentario(idComentario)
+    {
+        $("#txtComentarioEliminar").val(idComentario); 
+        $("#dialog-eliminar-comentario").dialog("open");                                                                             
+    }
+    
+    function AbrirDialogoAgregarComentarios()
+    {
+        $("#dialog-agregar-comentarios").dialog("open");                                                                             
+    }
+    
+    function AgregarComentarios()
+    {
+        var comentario = $("#txtComentario").val();
+        var idAlbum = $("#txtIdAlbum").val();
+        var fkUsuario = "<?php echo $idUserP; ?>"; 
+        
+        $.ajax({
+                url:   '/UCABsocial/Coments/agregarComentario?comentario='+comentario+'&fkAlbums='+idAlbum+'&fkUsers='+fkUsuario,
+                type:  'post',
+                success:  function (response) {
+                    $("#spanMensajeDialogoInfoComentarios").html('Se ha agregado exitosamente el comentario');                          
+                    $("#dialog-info-comentarios").dialog("open");                                        
+                }
+        });                                                                                    
     }    
     
     function AgregarAlbum() 
@@ -427,14 +469,39 @@
                     }
                     else
                     {                                                              
-                        $("#spanMensajeDialogoInfo").html('Se ha eliminado exitosamente el nuevo Album')                            
+                        $("#spanMensajeDialogoInfo").html('Se ha eliminado exitosamente el nuevo Album');                        
                         $("#dialog-info").dialog("open"); 
+                    }                            
+                }
+        });            
+    }
+    
+    function EliminarComentario() 
+    {
+        var valor = $("#txtComentarioEliminar").val();    
+          
+        $.ajax({
+                url:   '/UCABsocial/Coments/eliminarComentario?codigo='+valor,
+                type:  'post',
+                success:  function (response) {
+                    var resultado = response;
+                    if(resultado.indexOf("Fallo") != -1)
+                    {                        
+                        $("#spanMensajeDialogoInfo").html('Se ha producido un problema intentando eliminar el comentario, por favor intentelo nuevamente'); 
+                        $("#dialog-info").dialog("open"); 
+                    }
+                    else
+                    {                                                              
+                        $("#spanMensajeDialogoInfoComentarios").html('Se ha eliminado exitosamente el comentario');                          
+                        $("#dialog-info-comentarios").dialog("open"); 
                     }                            
                 }
         });            
     }    
     
   $(function() {
+      
+        $('#txtComentario').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.@,;:¿?¡! $'); 
       
         var username = "<?php echo $usernameUsuario; ?>";
         $("#usernameConectado").val(username);        
@@ -507,7 +574,23 @@
             }            
           }
         });    
-                
+        
+        $( "#dialog-agregar-comentarios" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,              
+          buttons: {
+            Agregar: function() {
+              $(this).dialog( "close" );
+              AgregarComentarios();
+            },
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });         
+        
         $( "#dialog-mensajes" ).dialog({
           modal: true,
           autoOpen: false, 
@@ -534,6 +617,19 @@
           }
         }); 
         
+        $( "#dialog-info-comentarios" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,              
+          buttons: {
+            Aceptar: function() {
+              $(this).dialog( "close" );
+              RecargarComentarios();
+            }
+          }
+        });         
+        
         $( "#dialog-editar" ).dialog({
           modal: true,
           autoOpen: false, 
@@ -547,6 +643,22 @@
           }
         });  
         
+        $( "#dialog-eliminar-comentario" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,              
+          buttons: {
+            Eliminar: function() {
+              $(this).dialog( "close" );
+              EliminarComentario();
+            },
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });        
+        
 //        $('#locations').focusout(function() {
 //                $('#locations').val('');
 //                $('#autoCompleteDiv').hide();
@@ -559,7 +671,7 @@
     <div class="navbar navbar-inverse" style="width: 99.5%;">          
         <ul class="nav navbar-nav navbar-left" style='padding-right:100px'>
           <li>
-            <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120"> 
+            <img src="<?php echo $this->webroot; ?>img/logoo.png" width="230" height="90"> 
           </li> 
         </ul>
         <div class="todo-search" style="width:700px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
@@ -787,10 +899,22 @@
     <span id="spanMensajeDialogoInfo"></span>
   </p>
 </div>
+<div id="dialog-info-comentarios" title="UCABsocial - Comentarios">
+  <p>
+    <input id="redirectUrlInfo" type="hidden" value=""/>
+    <span id="spanMensajeDialogoInfoComentarios"></span>
+  </p>
+</div>
 <div id="dialog-eliminar" title="Eliminar Album">
   <p>
     <input id="txtAlbumEliminar" type="hidden" value=""/>
     <span id="spanMensajeDialogoInfoEliminar">¿Realmente desea eliminar este album?</span>
+  </p>
+</div>
+
+<div id="dialog-agregar-comentarios" title="Agregar Comentarios">
+  <p>
+    <span id="spanMensajeDialogoAgregarComentarios">¿Realmente desea agregar este comentario?</span>
   </p>
 </div>
 
@@ -806,13 +930,29 @@
         </div>
     </div> 
     <br/>
-    <div class="gradientBoxesWithOuterShadows">
+    <div class="gradientBoxesWithOuterShadows" style="height: auto;">
         <h6 style="float: left;">Comentarios</h6>
-        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:alert('EPA');"> <span class="fui-new"></span> Agregar Comentario </a>
         <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
         <br/>
         <div id="divComentarios" class="gradientBoxesWithOuterShadows" style="padding-top: 18px;">
             
         </div>
+        <div style="clear: both;"></div>
+        <br/>
+        <div>
+            <div style='padding:5px; border-style: solid; border-width: 1px;'>
+                <img src="<?php echo $imagen; ?>" width='45' height='45' />
+                <textarea id="txtComentario" placeholder="Introduzca un comentario" style="width: 94%; resize: none;"></textarea>
+            </div>
+        </div>
+        <br/>
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogoAgregarComentarios();"> <span class="fui-new"></span> Agregar Comentario </a>
     </div>
+</div>
+
+<div id="dialog-eliminar-comentario" title="Eliminar Comentario">
+  <p>
+    <input id="txtComentarioEliminar" type="hidden" value=""/>
+    <span id="spanMensajeDialogoInfoEliminar">¿Realmente desea eliminar este comentario?</span>
+  </p>
 </div>
