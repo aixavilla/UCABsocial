@@ -156,6 +156,7 @@
     
     $logout = $this->Session->read('logout');
     
+    echo $this->Html->script('validCampoFranz'); 
 ?>
 
 <style>
@@ -330,6 +331,22 @@
         location.href = '/UCABsocial/Registro/Index?idUsuario='+url;
     }
     
+    function AgregarComentarios()
+    {
+        var comentario = $("#txtComentario").val();
+        var idAlbum = $("#txtIdAlbum").val();
+        var fkUsuario = "<?php echo $usuario_Valores['User']['id']; ?>"; 
+        
+        $.ajax({
+                url:   '/UCABsocial/Coments/agregarComentario?comentario='+comentario+'&fkAlbums='+idAlbum+'&fkUsers='+fkUsuario,
+                type:  'post',
+                success:  function (response) {
+                    $("#spanMensajeDialogoInfoComentarios").html('Se ha agregado exitosamente el comentario');                          
+                    $("#dialog-info-comentarios").dialog("open");                                        
+                }
+        });                                                                                    
+    }
+    
     function AbrirEliminar()
     {
         $("#spanMensajeDialogoConfirmacion").html('Realmente desea eliminar al usuario de sus amigos?');         
@@ -390,7 +407,121 @@
         });
     }    
     
+    function RecargarLikes(idAlbum, idUser)
+    { 
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikes").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuario?codigo='+idAlbum+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikes").html(response);                    
+                }
+        });         
+    }    
+    
+    function Like()
+    {
+        var idAlbum = $("#txtIdAlbum").val();
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>";
+        var valor = "LIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/insertarLike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikes(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }
+    
+    function Unlike()
+    {
+        var idAlbum = $("#txtIdAlbum").val();
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>";
+        var valor = "UNLIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/procesarUnlike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikes(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }    
+    
+    function AbrirDialogoAgregarComentarios()
+    {
+        if($("#txtComentario").val() != "")
+        {
+            $("#dialog-agregar-comentarios").dialog("open");                                                                             
+        }
+    }
+    
+    function AbrirDialogoAlbum(idAlbum)
+    {
+        $("#txtIdAlbum").val(idAlbum);      
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarContenidoAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divContenidoAlbum").html(response);
+                    if(!response.indexOf("No existe contenido para mostrar") !== -1)
+                    {
+                        $("#carousel").infiniteCarousel({});                    
+                    }
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbumOtro?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentarios").html(response);                    
+                }
+        });    
+        
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>"; 
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikes").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuario?codigo='+idAlbum+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikes").html(response);                    
+                }
+        });         
+        
+        $("#dialog-album").dialog("open");                                                                             
+    } 
+    
+    function RecargarComentarios()
+    {
+        $("#txtComentario").val("");
+        var idAlbum = $("#txtIdAlbum").val();
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbumOtro?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentarios").html(response);                    
+                }
+        });                                                                              
+    }    
+    
   $(function() {
+      
+        $('#txtComentario').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.@,;:¿?¡! $'); 
       
         $( "#accordion" ).accordion({
            heightStyle: "content"
@@ -433,7 +564,9 @@
           modal: true,
           autoOpen: false, 
           width: 400,
-          height: 400,              
+          height: 400, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Si: function() {
               Agregar();
@@ -449,7 +582,9 @@
           modal: true,
           autoOpen: false, 
           width: 400,
-          height: 400,              
+          height: 400,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Si: function() {
               Eliminar();
@@ -465,7 +600,9 @@
               modal: true,
               autoOpen: false, 
               width: 400,
-              height: 400,              
+              height: 400, 
+              closeOnEscape: false,
+              open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },              
               buttons: {
                 Aceptar: function() {
                   $(this).dialog( "close" );
@@ -479,18 +616,63 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Agregar: function() {
               $(this).dialog( "close" );
               location.reload();
             }
           }
-        });            
+        }); 
         
-//        $('#autoCompleteDiv').focusout(function() {
-//                $('#autoCompleteDiv').hide();
-//        });         
+        $( "#dialog-album" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          closeOnEscape: false,     
+          width: 1000,
+          height: 700,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Cerrar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });         
+        
+        $( "#dialog-agregar-comentarios" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Agregar: function() {
+              $(this).dialog( "close" );
+              AgregarComentarios();
+            },
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });         
+        
+        $( "#dialog-info-comentarios" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Aceptar: function() {
+              $(this).dialog( "close" );
+              RecargarComentarios();
+            }
+          }
+        });                    
     
   });
   </script>
@@ -499,7 +681,7 @@
     <div class="navbar navbar-inverse" style="width: 99.5%;">          
         <ul class="nav navbar-nav navbar-left" style='padding-right:100px'>
           <li>
-            <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120"> 
+            <img src="<?php echo $this->webroot; ?>img/logoo.png" width="230" height="90"> 
           </li> 
         </ul>
         <div class="todo-search" style="width:700px; float:left ; margin-top:35px; height:50px; padding-top: 10px">
@@ -611,7 +793,7 @@
                                 {
                                     foreach($amigosGrafo2 as $amigosCompletos2)
                                     {
-                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='".$amigosCompletos2[0]['users']['foto']."' width='60' heigth='60' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'><img src='".$amigosCompletos2[0]['users']['foto']."' width='60' heigth='60' /></a></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
                                     }
                                 }
                                 else 
@@ -684,11 +866,20 @@
                                 <?php 
                                     if(count($albums)>0)
                                     {
+                                        $cont = 1;                                        
                                         foreach($albums as $album)
                                         {
                                             if(($album['albums']['privacidad'] == 'Público') || ($esAmigo=='si')) 
                                             {
-                                                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='../img/album.jpg' width='80' heigth='80' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/album?code=".$album['albums']['id']."'>".$album['albums']['nombre']." <a></td></tr>";
+                                                if($imagenesAlbums[$cont] == "No hay imagen")
+                                                {
+                                                    echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/photo-album.png' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoAlbum(".$album['albums']['id'].")'>".$album['albums']['nombre']." </a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";                                                
+                                                }
+                                                else 
+                                                {
+                                                    echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='position:relative'><img src='".$imagenesAlbums[$cont]."' width='60' heigth='60' /><div style='position:absolute; top:0; left:0;'><img border='0' src='../img/cintillo.png' width='60' heigth='60' /></div></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoAlbum(".$album['albums']['id'].")'>".$album['albums']['nombre']." </a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";                                                
+                                                    //echo '<div style="position:relative"><img src="'.$imagenesAlbums[$cont].'" width="60" hspace="16" height="60" vspace="16" /><div style="position:absolute; top:0; left:0;"><a href="javascript:AbrirDialogoEditarAlbum('.$album['albums']['id'].')"><img border="0"  src="'.$imagenesAlbums[$cont].'" width="60" height="60" /></a></div></div>'; 
+                                                }                                                
                                             }
                                         }
                                     }
@@ -733,5 +924,51 @@
   <p>
     <input id="redirectUrl2" type="hidden" value=""/>
     <span id="spanMensajeDialogo2"></span>
+  </p>
+</div>
+
+<div id="dialog-album" title="Album">
+    <input id="txtIdAlbum" type="hidden" value=""/>
+    <div class="gradientBoxesWithOuterShadows">
+        <h6 style="float: left;">Contenido</h6>  
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>        
+        <div id="divContenidoAlbum" class="jcarousel" style="padding-top: 18px;">
+            
+        </div>
+    </div> 
+    <br/>
+    <div class="gradientBoxesWithOuterShadows" style="height: auto;">
+        <h6 style="float: left;">Comentarios</h6> <div id="divLikes" style="float: right;"></div>&nbsp;&nbsp; <div id="divImagenLikes" style="float: right;"></div>
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>
+        <div id="divComentarios" class="gradientBoxesWithOuterShadows" style="padding-top: 18px;">
+            
+        </div>
+        <div style="clear: both;"></div>
+        <br/>
+        <div>
+            <div style='padding:5px; border-style: solid; border-width: 1px;'>
+                <img src="<?php echo $usuario_Valores['User']['foto']; ?>" width='45' height='45' />
+                <textarea id="txtComentario" placeholder="Introduzca un comentario" style="width: 94%; resize: none;"></textarea>
+            </div>
+        </div>
+        <br/>
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogoAgregarComentarios();"> <span class="fui-new"></span> Agregar Comentario </a>
+        <div style="clear: both;"></div>
+        <div style="clear: both;"></div>         
+    </div>
+</div>
+
+<div id="dialog-agregar-comentarios" title="Agregar Comentarios">
+  <p>
+    <span id="spanMensajeDialogoAgregarComentarios">¿Realmente desea agregar este comentario?</span>
+  </p>
+</div>
+
+<div id="dialog-info-comentarios" title="UCABsocial - Comentarios">
+  <p>
+    <input id="redirectUrlInfo" type="hidden" value=""/>
+    <span id="spanMensajeDialogoInfoComentarios"></span>
   </p>
 </div>

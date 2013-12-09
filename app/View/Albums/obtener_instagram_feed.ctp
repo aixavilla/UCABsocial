@@ -1,5 +1,5 @@
 <?php
- if(isset($respuesta)) { 
-    echo $this->Js->object($respuesta); 
+ if(isset($instagramFeed)) { 
+    echo $this->Js->object($instagramFeed); 
   } 
 ?>

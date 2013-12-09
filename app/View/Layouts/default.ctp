@@ -42,7 +42,7 @@
                 <div class="navbar navbar-inverse" style="width: 99.5%; padding-left: 3px;">          
                    <ul class="nav navbar-nav navbar-left"> 
                      <li>
-                       <img src="<?php echo $this->webroot; ?>img/logoo.png" width="250" height="120">           
+                       <img src="<?php echo $this->webroot; ?>img/logoo.png" width="210" height="90">           
                      </li>
                    </ul>
                     <div style="float: right; padding-right: 40px; padding-top: 15px;">

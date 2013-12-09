@@ -31,7 +31,7 @@
 				autoHideCaptions: false,
 				autoPilot: false,
 				prevNextInternal: true,
-				internalThumbnails: false,
+				internalThumbnails: true,
 				enableKeyboardNav: true,
 				onSlideStart: function(){},
 				onSlideEnd: function(){},

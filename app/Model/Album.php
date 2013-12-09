@@ -18,6 +18,33 @@
           
         }
         
+        public function listarImagenesAlbums($albums)
+        {
+            try
+            {
+                $data[] = array();
+                foreach ($albums as $objAlbum)
+                {
+                    $imagenDestacada = $this->query("SELECT R.* FROM records R, historics H WHERE (H.fkAlbums = ".$objAlbum['albums']['id'].") AND (H.fkRecords = R.id) LIMIT 1;");
+                    if(isset($imagenDestacada[0]['R']['url']))
+                    {
+                        $data[] = $imagenDestacada[0]['R']['url'];
+                    }
+                    else 
+                    {
+                        $data[] = "No hay imagen";
+                    }
+                }
+                
+                return $data;
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando las imagenes destacadas de los albums - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error en el listar albums');
+            }
+        }        
+        
         public function agregarNuevoAlbum($atributos)
         {
             try
@@ -54,21 +81,20 @@
         {
             try
             {
-                return $this->query("SELECT R.* FROM records R, historics H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id);");
+                return $this->query("SELECT R.*, H.* FROM records R, historics H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id);");
             }
             catch (Exception $ex)
             {
                 $this->log("Se produjo un error consultando los registros del album con el valor ".$variable." - La excepcion es: "+$ex->getMessage());
                 throw new Exception('Error al listar el contenido del album');
             }
-          
         } 
         
         public function listarComentariosAlbum($variable)
         {
             try
             {
-                return $this->query("SELECT C.*, U.* FROM coments C, users U WHERE (C.fkAlbums = ".$variable.") AND (C.fkUsers = U.id);");
+                return $this->query("SELECT C.*, U.* FROM coments C, users U WHERE (C.fkAlbums = ".$variable.") AND (C.descripcion <> 'LIKE') AND (C.descripcion <> 'UNLIKE') AND (C.fkUsers = U.id) ORDER BY C.id ASC;");
             }
             catch (Exception $ex)
             {
@@ -76,6 +102,81 @@
                 throw new Exception('Error al listar el contenido del album');
             }
           
-        }         
+        } 
+        
+        public function listarLikesAlbum($variable)
+        {
+            try
+            {
+                return $this->query("SELECT C.*, U.* FROM coments C, users U WHERE (C.fkAlbums = ".$variable.") AND (C.fkUsers = U.id) AND (C.descripcion = 'LIKE') ORDER BY C.id ASC;");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando los likes del album con el valor ".$variable." - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error al listar likes del album');
+            }
+        }
+        
+        public function listarLikesAlbumUsuario($variableAlbum, $variableUsuario)
+        {
+            try
+            {
+                return $this->query("SELECT C.*, U.* FROM coments C, users U WHERE (C.fkAlbums = ".$variableAlbum.") AND (C.fkUsers = ".$variableUsuario.") AND (C.fkUsers = U.id) AND (C.descripcion = 'LIKE') ORDER BY C.id ASC;");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando si el usuario le ha dado like al album con el valor ".$variableAlbum." - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error al listar likes del album');
+            }
+        } 
+        
+        public function procesarUnlike($variableAlbum, $variableUser, $variableValor)
+        {
+            try
+            {
+                return $this->query("UPDATE coments SET descripcion = '".$variableValor."' WHERE (fkAlbums = ".$variableAlbum.") AND (fkUsers = ".$variableUser.");");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Ocurrio un error al marcar unlike del Album - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error al tildar unlike del album');
+            }
+        }
+        
+        public function insertarLike($variableAlbum, $variableUser, $variableValor)
+        {
+            try
+            {
+                return $this->query("INSERT INTO coments (descripcion, created, fkUsers, fkAlbums) VALUES ('".$variableValor."', NOW(), ".$variableUser.", ".$variableAlbum.");");
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Ocurrio un error al marcar like del Album - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error al tildar like del album');
+            }
+        }  
+        
+        public function listarContenidoAmigos($amigos)
+        {
+            try
+            {
+                $data[] = array();               
+                foreach ($amigos as $objAmigo)
+                {
+                    $contenidoAmigo = $this->query("SELECT A.*, U.* FROM users U, Albums A WHERE (A.fkUsers = ".$objAmigo[0]['users']['id'].") AND (U.id = ".$objAmigo[0]['users']['id'].") ;");
+                    if(isset($contenidoAmigo[0]['A']['id']))
+                    {
+                        $data[] = $contenidoAmigo;
+                    }
+                }
+                
+                return $data;
+            }
+            catch (Exception $ex)
+            {
+                $this->log("Se produjo un error consultando las imagenes destacadas de los albums - La excepcion es: "+$ex->getMessage());
+                throw new Exception('Error en el listar albums');
+            }
+        }        
     }                
 ?>

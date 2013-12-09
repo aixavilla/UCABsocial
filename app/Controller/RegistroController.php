@@ -104,13 +104,39 @@ class RegistroController extends AppController
 
                  $this->loadModel("Album");
                  $albums = $this->Album->listarAlbums($Usuario[0]['users']['id']);
-                 $this->set('albums',$albums);            
+                 $this->set('albums',$albums);
+                 
+                 $imagenesAlbums = $this->Album->listarImagenesAlbums($albums);                
+                 $this->set('imagenesAlbums',$imagenesAlbums);
+                 
+                 $contenidoAmigos = $this->Album->listarContenidoAmigos($amigosGrafo);            
+                 $this->set('contenidoAmigos',$contenidoAmigos);
+
+                 $data[] = array();
+                 foreach($contenidoAmigos as $objContenidoAmigo)
+                 {
+                     if(isset($objContenidoAmigo[0]))
+                     {
+                         $resultRecords = $this->Album->listarContenidoAlbum($objContenidoAmigo[0]['A']['id']);
+                         foreach ($resultRecords as $objRecords)
+                         {                    
+                             if(isset($objRecords['R']['url']))
+                             {
+                                 $data[] = $objRecords;
+                             } 
+                         }
+                     }
+                 }
+                 $this->Session->write('data',$data);     //QUITAR                 
+                 $this->set('imagenesAlbumsAmigos',$data);                
             }          
             else 
             {
                  $this->redirect(array('controller' => 'Pages', 'action' => 'display'));       
             }
-        }catch(Exception $ex){
+        }
+        catch(Exception $ex)
+        {
             $this->log("Error al tratar de hacer el ingreso del usuario a la red social");
             $this->set('error',"error");           
         }
@@ -351,6 +377,6 @@ class RegistroController extends AppController
         }catch(Exception $ex){
             $this->lod("Se produjo un error al cargar los amigos de el usuario registrado actualmente");           
         }
-    }    
+    }        
 }
 ?>

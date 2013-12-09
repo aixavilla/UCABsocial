@@ -122,8 +122,7 @@ class AlbumsController extends AppController
             $variable = $this->params['url']['codigo'];
             $this->loadModel("Album");
             $ComentariosAlbum = $this->Album->listarComentariosAlbum($variable);
-            $this->layout = 'ajax'; 
-            $this->Session->write('commentarioooos', $ComentariosAlbum);     
+            $this->layout = 'ajax';     
             $this->set('comentariosAlbum', $ComentariosAlbum); 
             
         } 
@@ -131,6 +130,160 @@ class AlbumsController extends AppController
         {
             $this->log("Ocurrio un error al consultar el contenido del Album");
         }     
+    } 
+    
+    /*
+     * Funcion que nos retorna un arreglo con todos los comentarios del album seleccionado. 
+     * $variable - Representa el id del Album a listar para obtener sus comentarios
+     */
+    public function listarComentariosAlbumOtro()
+    {
+        try
+        {
+            $variable = $this->params['url']['codigo'];
+            $this->loadModel("Album");
+            $ComentariosAlbum = $this->Album->listarComentariosAlbum($variable);
+            $this->layout = 'ajax';      
+            $this->set('comentariosAlbum', $ComentariosAlbum); 
+            
+        } 
+        catch (Exception $ex) 
+        {
+            $this->log("Ocurrio un error al consultar el contenido del Album");
+        }     
+    }  
+    
+    public function obtenerInstagramFeed()
+    {
+        header('Content-type: application/json');
+        $this->layout = 'ajax'; 
+        $client = "d10b95cf56094bca8b841734baadc367";
+        $query = $this->params['url']['q'];
+        $clnum = mt_rand(1,3);
+
+        $api = "https://api.instagram.com/v1/tags/".$query."/media/recent?client_id=".$client;
+        $url = "http://". $_SERVER["SERVER_NAME"]."/UCABsocial/Albums/obtenerInstagramFeed?q=".$query;
+                
+        if(function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); 
+            $output = curl_exec($ch);
+            echo curl_error($ch);
+            curl_close($ch);
+            $respuesta = $output;
+        } else{
+            $respuesta = file_get_contents($url);
+        }        
+        $response = $respuesta;
+        $images = array();
+
+        if($response){
+                foreach(json_decode($response)->data as $item){		
+                $src = $item->images->standard_resolution->url;
+                $thumb = $item->images->thumbnail->url;
+                        $url = $item->link;
+
+                $images[] = array(
+                "src" => htmlspecialchars($src),
+                "thumb" => htmlspecialchars($thumb),
+                "url" => htmlspecialchars($url)
+                );
+
+            }
+        }
+        $this->set('instagramFeed', str_replace('\\/', '/', json_encode($images))); 
+        //print_r(str_replace('\\/', '/', json_encode($images)));
+        //die();        
+    }  
+    
+        public function get_curl($url) {
+            if(function_exists('curl_init')) {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL,$url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_HEADER, 0);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); 
+                $output = curl_exec($ch);
+                echo curl_error($ch);
+                curl_close($ch);
+                return $output;
+            } else{
+                return file_get_contents($url);
+            }
+        }
+        
+    /*
+     * Funcion que nos retorna un arreglo con todos los albums del usuario. 
+     * $variable lo obtenemos del valor que retorna el query del modelo album
+     */
+    public function listarLikesAlbum()
+    {
+        try
+        {
+            $variableAlbum = $this->params['url']['codigo'];          
+            $this->loadModel("Album");
+            $likesAlbum = $this->Album->listarLikesAlbum($variableAlbum);
+            $this->layout = 'ajax';    
+            $this->set('likesAlbum', $likesAlbum); 
+            
+        } catch (Exception $ex) {
+            $this->log("Ocurrio un error al consultar la lista de likes del album");
+        }    
+    } 
+    
+    public function listarLikesAlbumUsuario()
+    {
+        try
+        {
+            $variableAlbum = $this->params['url']['codigo'];
+            $variableUsuario = $this->params['url']['user'];            
+            $this->loadModel("Album");
+            $likesAlbum = $this->Album->listarLikesAlbumUsuario($variableAlbum, $variableUsuario);
+            $this->layout = 'ajax';    
+            $this->set('likesAlbum', $likesAlbum); 
+            
+        } catch (Exception $ex) {
+            $this->log("Ocurrio un error al consultar de si un usario ha dado like al album");
+        }    
+    } 
+    
+    public function procesarUnlike()
+    {
+        try
+        {
+            $variableAlbum = $this->params['url']['codigo'];
+            $variableUsuario = $this->params['url']['user']; 
+            $variableValor = $this->params['url']['valor'];
+            $this->loadModel("Album");
+            $respuesta = $this->Album->procesarUnlike($variableAlbum, $variableUsuario, $variableValor);
+            $this->layout = 'ajax';    
+            $this->set('respuesta', $respuesta); 
+            
+        } catch (Exception $ex) {
+            $this->log("Ocurrio un error al marcar like/unlike del Album");
+        }        
+    }
+    
+    public function insertarLike()
+    {
+        try
+        {
+            $variableAlbum = $this->params['url']['codigo'];
+            $variableUsuario = $this->params['url']['user']; 
+            $variableValor = $this->params['url']['valor'];
+            $this->loadModel("Album");
+            $respuesta = $this->Album->insertarLike($variableAlbum, $variableUsuario, $variableValor);
+            $this->layout = 'ajax';    
+            $this->set('respuesta', $respuesta); 
+            
+        } catch (Exception $ex) {
+            $this->log("Ocurrio un error al marcar like/unlike del Album");
+        }        
     }    
 }
 

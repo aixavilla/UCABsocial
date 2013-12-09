@@ -83,7 +83,10 @@ class PerfilController extends AppController{
 
                 $this->loadModel("Album");
                 $albums = $this->Album->listarAlbums($Usuario[0]['users']['id']);
-                $this->set('albums',$albums);             
+                $this->set('albums',$albums);   
+                
+                $imagenesAlbums = $this->Album->listarImagenesAlbums($albums);                 
+                $this->set('imagenesAlbums',$imagenesAlbums);                 
            }          
            else 
            {

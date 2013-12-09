@@ -161,8 +161,9 @@
     
     $logout = $this->Session->read('logout'); 
     
-    echo $this->Html->script('validCampoFranz');  
-    
+    echo $this->Html->script('validCampoFranz');
+    //echo $this->Html->script('ajax');
+     
 ?>
 
 <style>
@@ -300,6 +301,45 @@
             display: none;
         }
         
+
+        #sform { width: 450px; margin: 0 auto; margin-top: 25px; margin-bottom: 35px; }
+        #sform #s { 
+        padding: 10px 11px; 
+        padding-left: 60px;
+        color: #999; 
+        width: 450px; 
+        border: 1px solid #ddd; 
+        font-size: 22px; 
+        /* icon source: http://modmyi.com/forums/iphone-4-new-skins-themes-launches/723225-buuf-iphone-4-a-398.html#post6275581 */
+        background: url('../img/instacam.png') 6px 7px no-repeat;
+        transition: box-shadow 0.15s linear 0s, color 0.15s linear 0s;
+        -webkit-transition: box-shadow 0.25s linear 0s, color 0.15s linear 0s;
+        -moz-transition: box-shadow 0.25s linear 0s, color 0.15s linear 0s;
+        -o-transition: box-shadow 0.25s linear 0s, color 0.15s linear 0s;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+        -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+        -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset; 
+        font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif; 
+        }
+        #sform #s:focus { 
+        color: #767676;
+        border-color: #c5d7ee;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(170, 200, 240, 0.9);
+        -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(170, 200, 240, 0.9);
+        -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(170, 200, 240, 0.9);
+        }
+
+        #sform #s.loading { 
+                background: url('../img/loader.gif') 10px 7px no-repeat;
+        }
+
+        #photos { margin-left: 100px; text-align: center; }
+        #photos .p { float: left; width: 170px; display: inline-block; position: relative; margin-right: 20px; margin-bottom: 12px; }
+
+        #photos .p img { border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; }
+
+        #photos .p .fullsize { width: 32px; height: 32px; display: block; margin-left: 70px; margin-bottom: 5px; }        
+        
 </style>
 <script>
     
@@ -349,6 +389,58 @@
         });            
     }    
     
+    function GuardarImagenAlbum() 
+    {
+        var valorFoto = $("#txtUrlFoto").val();
+        var valorDescripcion = $("#txtDescripcionFoto").val();
+        var valorAlbum = $("#txtIdAlbum").val();        
+        
+        $.ajax({
+                url:   '/UCABsocial/Records/guardarFotos?urlFoto='+valorFoto+'&descripcion='+valorDescripcion+'&fkAlbums='+valorAlbum,
+                type:  'post',
+                success:  function (response) {
+                    var resultado = response;
+                    if(resultado.indexOf("0") != -1)
+                    {  
+                        $("#spanMensajeDialogoInstagram").html('Se añadió la imagen al album de manera exitosa');                        
+                        $("#dialog-info-instagram").dialog("open"); 
+                    }
+                    else
+                    {                                                              
+                        $("#spanMensajeDialogoInstagram").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente');                             
+                        $("#dialog-info-instagram").dialog("open");
+                    }                            
+                }
+        });            
+    }    
+    
+    function BuscarPorTag()
+    {
+        if($("#s").val() != "")
+        {
+            $("#s").addClass("loading");
+            var tagSearch = $("#s").val();
+
+            $.ajax({
+                    url:   'https://api.instagram.com/v1/tags/'+tagSearch+'/media/recent?client_id=d10b95cf56094bca8b841734baadc367',
+                    type:  'post',
+                    contentType: "jsonp",
+                    dataType: 'jsonp',                    
+                    success:  function (response) {
+                        $("#s").removeClass("loading");
+                        $.each(response.data, function(index, item) {
+                                var ncode = "<div class='p'><a href='Javascript:AbrirDialogoGuardarFoto(\""+item.images.standard_resolution.url+"\");'><img src='../img/full-image.png' alt='fullsize'></a> <a href='"+item.images.standard_resolution.url+"' target='_blank'><img src='"+item.images.standard_resolution.url+"' width='150' heigth='150'></a></div>";
+                                $("#photos").append(ncode);
+                        });                   
+                    },
+                    error: function(xhr, type, exception) { 
+                            $("#s").removeClass("loading");
+                            $("#photos").html("Error: " + type); 
+                    }                    
+            });
+        }
+    }    
+    
     function AbrirDialogo()
     {
         $("#txtNombreAlbum").val("");
@@ -373,9 +465,75 @@
                 success:  function (response) {
                     $("#divComentarios").html(response);                    
                 }
-        });    
+        });  
+        
+        var idUser = "<?php echo $idUserP; ?>"; 
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikes").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuario?codigo='+idAlbum+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikes").html(response);                    
+                }
+        });        
+        
         $("#dialog-editar").dialog("open");                                                                             
     }
+    
+    function RecargarLikes(idAlbum, idUser)
+    { 
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikes").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuario?codigo='+idAlbum+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikes").html(response);                    
+                }
+        });         
+    }    
+    
+    function Like()
+    {
+        var idAlbum = $("#txtIdAlbum").val();
+        var idUser = "<?php echo $idUserP; ?>";
+        var valor = "LIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/insertarLike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikes(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }
+    
+    function Unlike()
+    {
+        var idAlbum = $("#txtIdAlbum").val();
+        var idUser = "<?php echo $idUserP; ?>";
+        var valor = "UNLIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/procesarUnlike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikes(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }    
 
     function RecargarComentarios()
     {
@@ -390,10 +548,35 @@
         });                                                                              
     }
 
+    function RecargarContenido()
+    {
+        $("#txtDescripcionFoto").val("");
+        var idAlbum = $("#txtIdAlbum").val();
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarContenidoAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divContenidoAlbum").html(response);
+                    $("#carousel").infiniteCarousel({});                    
+                }
+        });                                                                              
+    }
+
     function AbrirDialogoEliminar(idAlbum)
     {
         $("#txtAlbumEliminar").val(idAlbum); 
         $("#dialog-eliminar").dialog("open");                                                                             
+    }
+    
+    function AbrirDialogoInstagram()
+    {
+        $("#dialog-agregar-contenido").dialog("open");                                                                             
+    }  
+    
+    function AbrirDialogoGuardarFoto(urlFoto)
+    {
+         $("#txtUrlFoto").val(urlFoto);        
+        $("#dialog-guardar-foto").dialog("open");                                                                             
     }
     
     function AbrirDialogoEliminarComentario(idComentario)
@@ -404,23 +587,29 @@
     
     function AbrirDialogoAgregarComentarios()
     {
-        $("#dialog-agregar-comentarios").dialog("open");                                                                             
+        if($("#txtComentario").val() != "")
+        {
+            $("#dialog-agregar-comentarios").dialog("open");                                                                             
+        }
     }
     
     function AgregarComentarios()
     {
-        var comentario = $("#txtComentario").val();
-        var idAlbum = $("#txtIdAlbum").val();
-        var fkUsuario = "<?php echo $idUserP; ?>"; 
-        
-        $.ajax({
-                url:   '/UCABsocial/Coments/agregarComentario?comentario='+comentario+'&fkAlbums='+idAlbum+'&fkUsers='+fkUsuario,
-                type:  'post',
-                success:  function (response) {
-                    $("#spanMensajeDialogoInfoComentarios").html('Se ha agregado exitosamente el comentario');                          
-                    $("#dialog-info-comentarios").dialog("open");                                        
-                }
-        });                                                                                    
+        if($("#txtComentario").val() != "")
+        {
+            var comentario = $("#txtComentario").val();
+            var idAlbum = $("#txtIdAlbum").val();
+            var fkUsuario = "<?php echo $idUserP; ?>"; 
+
+            $.ajax({
+                    url:   '/UCABsocial/Coments/agregarComentario?comentario='+comentario+'&fkAlbums='+idAlbum+'&fkUsers='+fkUsuario,
+                    type:  'post',
+                    success:  function (response) {
+                        $("#spanMensajeDialogoInfoComentarios").html('Se ha agregado exitosamente el comentario');                          
+                        $("#dialog-info-comentarios").dialog("open");                                        
+                    }
+            }); 
+        }
     }    
     
     function AgregarAlbum() 
@@ -500,8 +689,10 @@
     }    
     
   $(function() {
-      
+
+        $('#s').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789'); 
         $('#txtComentario').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.@,;:¿?¡! $'); 
+        $('#txtDescripcionFoto').validCampoFranz('abcdefghijklmnñopqrstuvwxyzáéiou0123456789-_.@,;:¿?¡! $');         
       
         var username = "<?php echo $usernameUsuario; ?>";
         $("#usernameConectado").val(username);        
@@ -547,7 +738,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Agregar: function() {
               $(this).dialog( "close" );
@@ -563,7 +756,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Eliminar: function() {
               $(this).dialog( "close" );
@@ -579,7 +774,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Agregar: function() {
               $(this).dialog( "close" );
@@ -595,7 +792,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Agregar: function() {
               $(this).dialog( "close" );
@@ -608,7 +807,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Aceptar: function() {
               $(this).dialog( "close" );
@@ -621,7 +822,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Aceptar: function() {
               $(this).dialog( "close" );
@@ -633,7 +836,8 @@
         $( "#dialog-editar" ).dialog({
           modal: true,
           autoOpen: false, 
-          closeOnEscape: false,     
+          closeOnEscape: false, 
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           width: 1000,
           height: 700,              
           buttons: {
@@ -647,7 +851,9 @@
           modal: true,
           autoOpen: false, 
           width: 600,
-          height: 300,              
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
           buttons: {
             Eliminar: function() {
               $(this).dialog( "close" );
@@ -657,13 +863,57 @@
               $(this).dialog( "close" );
             }            
           }
-        });        
+        });
+
+        $( "#dialog-agregar-contenido" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 700,
+          height: 700,
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Listo: function() {
+              $(this).dialog( "close" );
+              $("#s").val("");
+              $("#photos").empty();            
+            }            
+          }          
+        });
         
-//        $('#locations').focusout(function() {
-//                $('#locations').val('');
-//                $('#autoCompleteDiv').hide();
-//        });         
-    
+        $( "#dialog-guardar-foto" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          closeOnEscape: false,     
+          width: 500,
+          height: 300, 
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Guardar: function() {
+              $(this).dialog( "close" );
+              GuardarImagenAlbum();
+            },              
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });   
+        
+        $( "#dialog-info-instagram" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Aceptar: function() {
+              $(this).dialog( "close" );
+              RecargarContenido();
+            }
+          }
+        });           
+
   });
   </script>
 
@@ -762,7 +1012,7 @@
                                 {
                                     foreach($amigosGrafo2 as $amigosCompletos2)
                                     {
-                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><img src='".$amigosCompletos2[0]['users']['foto']."' width='60' heigth='60' /></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='border: 1px solid black;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'><img src='".$amigosCompletos2[0]['users']['foto']."' width='60' heigth='60' /></a></div></td><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$amigosCompletos2[0]['users']['username']."'>".$amigosCompletos2[0]['users']['nombre']." ".$amigosCompletos2[0]['users']['apellido']."<a></td></tr>";
                                     }
                                 }
                                 else 
@@ -835,9 +1085,19 @@
                                 <?php 
                                     if(count($albums)>0)
                                     {
+                                        $cont = 1;
                                         foreach($albums as $album)
                                         {
-                                            echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/album.jpg' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoEditarAlbum(".$album['albums']['id'].")'>".$album['albums']['nombre']." <a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";
+                                            if($imagenesAlbums[$cont] == "No hay imagen")
+                                            {
+                                                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/photo-album.png' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoEditarAlbum(".$album['albums']['id'].")'>".$album['albums']['nombre']." </a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";                                                
+                                            }
+                                            else 
+                                            {
+                                                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div style='position:relative'><img src='".$imagenesAlbums[$cont]."' width='60' heigth='60' /><div style='position:absolute; top:0; left:0;'><img border='0' src='../img/cintillo.png' width='60' heigth='60' /></div></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoEditarAlbum(".$album['albums']['id'].")'>".$album['albums']['nombre']." </a><a href='javascript:AbrirDialogoEliminar(".$album['albums']['id'].");'><span class='fui-cross'></span></a></td></tr>";                                                
+                                            }
+                                            
+                                            $cont = $cont + 1;
                                         }
                                     }
                                     else
@@ -857,7 +1117,49 @@
                         </div>
                         <h3 style="color:#1ABC9C"> <span class="fui-cmd"></span>&nbsp;&nbsp; PUBLICACIONES DE MIS AMIGOS</h3>
                         <div>
-                            <p>No existen publicaciones por el momento</p>
+                            <table>
+                                <?php 
+                                    if(count($contenidoAmigos)>0)
+                                    {
+                                        foreach($contenidoAmigos as $objContenidoAmigo)
+                                        {
+                                            if(isset($objContenidoAmigo[0]))
+                                            {
+                                                if($objContenidoAmigo[0]['U']['id'] != "")
+                                                {
+                                                    $bandera = false;
+                                                    $imagenesAmigos = "";
+                                                    $date = new DateTime($objContenidoAmigo[0]['A']['created']);                                                    
+                                                    $detallesAmigos = "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><a href='/UCABsocial/Perfil/index?user=".$objContenidoAmigo[0]['U']['username']."'><img src='".$objContenidoAmigo[0]['U']['foto']."' width='30' heigth='30' /></a></div></td><td><a href='/UCABsocial/Perfil/index?user=".$objContenidoAmigo[0]['U']['username']."'><b>"." ".$objContenidoAmigo[0]['U']['nombre']."  ".$objContenidoAmigo[0]['U']['apellido']."</b></a> publicó el Album <td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='/UCABsocial/Perfil/index?user=".$objContenidoAmigo[0]['U']['username']."'>".$objContenidoAmigo[0]['A']['nombre']." </a><span style='font-size:8pt;'><b>".$date->format('F j, Y')."</b></span></td></tr>";                                                
+                                                    foreach($imagenesAlbumsAmigos as $objImagenesAmigos)
+                                                    {
+                                                        if(isset($objImagenesAmigos['H']))
+                                                        {
+                                                            if($objContenidoAmigo[0]['A']['id'] == $objImagenesAmigos['H']['fkAlbums'])
+                                                            {
+                                                                $bandera = true;
+                                                                $imagenesAmigos = $imagenesAmigos. "<img src='".$objImagenesAmigos['R']['url']."' width='80' heigth='80'/>&nbsp;";
+                                                            }
+                                                        }
+                                                    }
+                                                    if($bandera)
+                                                    {
+                                                        echo $detallesAmigos."<tr><td><div>".$imagenesAmigos."</div></td></tr>";
+                                                    }
+                                                    else
+                                                    {
+                                                        echo $detallesAmigos;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'>No existe contenido para mostrar</td></tr>";
+                                    }
+                                ?>
+                            </table>
                         </div>                        
                     </div>
                 </div>                    
@@ -875,6 +1177,9 @@
             <input id="txtNombreAlbum" type="text" value="" class="form-control" />
         </div>
     </div>
+    <div style="clear: both;"></div>
+    <br/>
+    <div style="clear: both;"></div> 
     <div style="padding-top: 5px;">                    
         <div style="float: left; width: 50%">
             <label><b>Privacidad del Album:</b></label>
@@ -922,7 +1227,7 @@
     <input id="txtIdAlbum" type="hidden" value=""/>
     <div class="gradientBoxesWithOuterShadows">
         <h6 style="float: left;">Contenido</h6>  
-        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:alert('EPA');"> <span class="fui-photo"></span> Agregar Contenido </a>        
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogoInstagram();"> <span class="fui-photo"></span> Agregar Contenido </a>        
         <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
         <br/>        
         <div id="divContenidoAlbum" class="jcarousel" style="padding-top: 18px;">
@@ -931,7 +1236,7 @@
     </div> 
     <br/>
     <div class="gradientBoxesWithOuterShadows" style="height: auto;">
-        <h6 style="float: left;">Comentarios</h6>
+        <h6 style="float: left;">Comentarios</h6> <div id="divLikes" style="float: right;"></div>&nbsp;&nbsp; <div id="divImagenLikes" style="float: right;"></div>
         <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
         <br/>
         <div id="divComentarios" class="gradientBoxesWithOuterShadows" style="padding-top: 18px;">
@@ -947,6 +1252,8 @@
         </div>
         <br/>
         <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogoAgregarComentarios();"> <span class="fui-new"></span> Agregar Comentario </a>
+        <div style="clear: both;"></div>
+        <div style="clear: both;"></div>        
     </div>
 </div>
 
@@ -954,5 +1261,41 @@
   <p>
     <input id="txtComentarioEliminar" type="hidden" value=""/>
     <span id="spanMensajeDialogoInfoEliminar">¿Realmente desea eliminar este comentario?</span>
+  </p>
+</div>
+
+<div id="dialog-agregar-contenido" title="Instagram">   
+    <section id="sform">
+        <small style="font-size: 8pt;"><b>Nota</b>: No se permiten espacios ni signos de puntuación. La búsqueda está limitada a un(1) tag.</small>
+        <div style="clear: both;"></div>
+        <br/>
+        <div style="clear: both;"></div>         
+        <input type="text" id="s" name="s" class="sfield" placeholder="Introduzca un tag..." autocomplete="off">
+        <div style="clear: both;"></div>
+        <br/>
+        <div style="clear: both;"></div> 
+        <a style="float: right; width: 120px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:BuscarPorTag();"> <span class="fui-search"></span>Buscar</a>            
+    </section>
+    <div style="clear: both;"></div>
+    <br/>
+    <div style="border-top: #000 1px solid;"></div>
+    <div style="clear: both;"></div>
+    <br/>
+    <div style="clear: both;"></div>    
+    <center>
+        <section id="photos"></section>    
+    </center>    
+</div>
+
+<div id="dialog-guardar-foto" title="Agregar Foto al Album">
+  <p>
+    <input id="txtUrlFoto" type="hidden" value=""/>
+    <textarea id="txtDescripcionFoto" placeholder="Introduzca una descripción para la imagen" style="width: 99%; resize: none;"></textarea>
+  </p>
+</div>
+
+<div id="dialog-info-instagram" title="Confirmación - Instagram">
+  <p>
+    <span id="spanMensajeDialogoInstagram"></span>
   </p>
 </div>

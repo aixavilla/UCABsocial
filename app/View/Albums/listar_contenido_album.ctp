@@ -7,7 +7,7 @@
             $respuesta = "<center><ul id='carousel'>";
             foreach($contenidoAlbum as $objContenido)
             {
-                $respuesta = $respuesta."<li><a href='".$objContenido['R']['url']."'><img width='600' height='400' alt=''  src='".$objContenido['R']['url']."' /></a></li>";      
+                $respuesta = $respuesta."<li><a href='".$objContenido['R']['url']."'><img width='617' height='617' alt='' src='".$objContenido['R']['url']."'/><p style='font-size:18pt;'><b>Prueba Contenido</b></p></a></li>";      
             } 
             $respuesta = $respuesta."</ul></center>";
             
