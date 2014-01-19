@@ -6,12 +6,12 @@ class AlbumsController extends AppController
      * Funcion que nos retorna un arreglo con todos los albums del usuario. 
      * $variable lo obtenemos del valor que retorna el query del modelo album
      */
-    public function listarAlbums($variable)
+    public function listarAlbums($variable, $tipoAlbum)
     {
         try{
             
             $this->loadModel("Album");
-            $album = $this->Album->listarAlbums($variable);
+            $album = $this->Album->listarAlbums($variable, $tipoAlbum);
             return $album;
             
         } catch (Exception $ex) {
@@ -31,7 +31,8 @@ class AlbumsController extends AppController
             $atributos = array(
             0 => $this->params['url']['nombre'],
             1 => $this->params['url']['privacidad'],
-            2 => $this->params['url']['fkUsers']);
+            2 => $this->params['url']['fkUsers'],
+            3 => $this->params['url']['tipo']);
                    
             $this->loadModel("Album");  
             $consulta = $this->Album->agregarNuevoAlbum($atributos);
@@ -110,6 +111,27 @@ class AlbumsController extends AppController
             $this->log("Ocurrio un error al consultar el contenido del Album");
         }     
     }
+    
+    /*
+     * Funcion que nos retorna un arreglo con todo el contenido del album seleccionado. 
+     * $variable - Representa el id del Album a listar
+     */
+    public function listarContenidoAlbumVideo()
+    {
+        try
+        {
+            $variable = $this->params['url']['codigo'];
+            $this->loadModel("Album");
+            $ContenidoAlbum = $this->Album->listarContenidoAlbum($variable);
+            $this->layout = 'ajax';            
+            $this->set('contenidoAlbum', $ContenidoAlbum); 
+            
+        } 
+        catch (Exception $ex) 
+        {
+            $this->log("Ocurrio un error al consultar el contenido del Album");
+        }     
+    }    
     
     /*
      * Funcion que nos retorna un arreglo con todos los comentarios del album seleccionado. 
@@ -251,6 +273,38 @@ class AlbumsController extends AppController
             $this->log("Ocurrio un error al consultar de si un usario ha dado like al album");
         }    
     } 
+    
+        public function listarLikesAlbumUsuarioVideo()
+    {
+        try
+        {
+            $variableAlbum = $this->params['url']['codigo'];
+            $variableUsuario = $this->params['url']['user'];            
+            $this->loadModel("Album");
+            $likesAlbum = $this->Album->listarLikesAlbumUsuario($variableAlbum, $variableUsuario);
+            $this->layout = 'ajax';    
+            $this->set('likesAlbum', $likesAlbum); 
+            
+        } catch (Exception $ex) {
+            $this->log("Ocurrio un error al consultar de si un usario ha dado like al album");
+        }    
+    }
+    
+    public function listarLikesAlbumUsuarioMusica()
+    {
+        try
+        {
+            $variableAlbum = $this->params['url']['codigo'];
+            $variableUsuario = $this->params['url']['user'];            
+            $this->loadModel("Album");
+            $likesAlbum = $this->Album->listarLikesAlbumUsuario($variableAlbum, $variableUsuario);
+            $this->layout = 'ajax';    
+            $this->set('likesAlbum', $likesAlbum); 
+            
+        } catch (Exception $ex) {
+            $this->log("Ocurrio un error al consultar de si un usario ha dado like al album");
+        }    
+    }    
     
     public function procesarUnlike()
     {

@@ -103,8 +103,14 @@ class RegistroController extends AppController
                  $this->set('todos',$todosUsuario);
 
                  $this->loadModel("Album");
-                 $albums = $this->Album->listarAlbums($Usuario[0]['users']['id']);
+                 $albums = $this->Album->listarAlbums($Usuario[0]['users']['id'], 'Foto');
                  $this->set('albums',$albums);
+                 
+                 $albumsVideo = $this->Album->listarAlbums($Usuario[0]['users']['id'], 'Video');
+                 $this->set('albumsVideo',$albumsVideo); 
+                 
+                 $albumsMusica = $this->Album->listarAlbums($Usuario[0]['users']['id'], 'Musica');
+                 $this->set('albumsMusica',$albumsMusica);                 
                  
                  $imagenesAlbums = $this->Album->listarImagenesAlbums($albums);                
                  $this->set('imagenesAlbums',$imagenesAlbums);

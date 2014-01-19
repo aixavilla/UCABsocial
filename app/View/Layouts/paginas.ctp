@@ -30,7 +30,8 @@
                 echo $this->Html->script('application'); 
                 echo $this->Html->script('oauthpopup');
                 echo $this->Html->script('jquery.infinitecarousel3');                
-                
+                echo $this->Html->script('jquery.youtubeplaylist');  
+                                
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');

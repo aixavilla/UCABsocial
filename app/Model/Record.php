@@ -9,28 +9,6 @@ class Record  extends AppModel{
             {  $agrego = 0;
                 for ( $i=0; $i < count($atributos); $i++ ){
                     $idRecordAgregado = 0;
-
-                    // asi es como creo que se deberia hacer aunq no se xq no funciona 
-                    /*    $datos = array("Records"=> array (
-                                "id" => NULL,
-                                "descripcion" => NULL,
-                                "url" => $atributos[$i][0],
-                                "status" => NULL,
-                                "modified" => NULL
-                                ));
-                        $this->create();
-                        $this->save($datos);
-
-                    $idRecordAgregado = $this->getLastInsertId();
-
-                    $datosH = array("Historics"=> array (
-                                "fkAlbums" => $atributos[$i][1],
-                                "fkRecords" => $idRecordAgregado
-                                ));
-                    $this->Historic = ClassRegistry::init('Historic');
-                    $this->Historic->create();
-                    $this->Historic->save($datosH);*/
-
                     if($this->query("INSERT INTO records VALUES(NULL,NULL,'".$atributos[$i][0]."',NULL,NOW(),NULL);"))
                     {
                         $idRecordAgregado = 6;
@@ -65,7 +43,7 @@ class Record  extends AppModel{
         {    
             try
             {
-                if($this->query("INSERT INTO records (descripcion, url, status, created) VALUES ('".$atributos[1]."', '".$atributos[0]."', 'Activo', NOW());"))
+                if($this->query("INSERT INTO records (descripcion, url, status, created) VALUES ('".$atributos[1]."', '".$atributos[0]."', 'Foto', NOW());"))
                 {                   
                     return 1;                   
                 }
@@ -93,7 +71,6 @@ class Record  extends AppModel{
                 throw new Exception('Error obteniendo los datos del maximo record insertado');     
             }        
         }        
-    
 }
 
 ?>

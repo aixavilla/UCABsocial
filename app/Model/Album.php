@@ -3,12 +3,11 @@
     class Album extends AppModel {
         public $name = 'Album';
     
-        
-        public function listarAlbums($variable)
+        public function listarAlbums($variable, $tipoAlbum)
         {
             try
             {
-                return $this->query("SELECT * FROM albums where (fkUsers = ".$variable.");");
+                return $this->query("SELECT * FROM albums where (fkUsers = ".$variable.") AND (imagendescriptiva = '".$tipoAlbum."');");
             }
             catch (Exception $ex)
             {
@@ -25,7 +24,7 @@
                 $data[] = array();
                 foreach ($albums as $objAlbum)
                 {
-                    $imagenDestacada = $this->query("SELECT R.* FROM records R, historics H WHERE (H.fkAlbums = ".$objAlbum['albums']['id'].") AND (H.fkRecords = R.id) LIMIT 1;");
+                    $imagenDestacada = $this->query("SELECT R.* FROM records R, historics H WHERE (H.fkAlbums = ".$objAlbum['albums']['id'].") AND (H.fkRecords = R.id) AND (R.status = 'Foto') LIMIT 1;");
                     if(isset($imagenDestacada[0]['R']['url']))
                     {
                         $data[] = $imagenDestacada[0]['R']['url'];
@@ -49,7 +48,7 @@
         {
             try
             {
-                if($this->query("INSERT INTO albums (created, nombre, privacidad, fkUsers) VALUES (NOW(), '".$atributos[0]."', '".$atributos[1]."',".$atributos[2].");"))
+                if($this->query("INSERT INTO albums (created, nombre, privacidad, fkUsers, imagendescriptiva) VALUES (NOW(), '".$atributos[0]."', '".$atributos[1]."',".$atributos[2]." , '".$atributos[3]."');"))
                 {
                     return 1;
                 }
@@ -81,7 +80,7 @@
         {
             try
             {
-                return $this->query("SELECT R.*, H.* FROM records R, historics H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id);");
+                return $this->query("SELECT R.*, H.* FROM records R, historics H WHERE (H.fkAlbums = ".$variable.") AND (H.fkRecords = R.id) AND (R.status = 'Foto');");
             }
             catch (Exception $ex)
             {
