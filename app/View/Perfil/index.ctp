@@ -272,7 +272,52 @@
             font-weight: bold;
             cursor: pointer;
             display: none;
-        }        
+        }  
+        
+        #ytvideo,
+        #ytvideo2 {
+            float: left;
+        }
+
+        .yt_holder {
+            background: #f3f3f3;
+            padding: 10px;
+            border: 1px solid #e3e3e3;
+                margin-bottom:15px;
+                min-height: 350px;
+        }
+        
+        ul#demo2 {
+            float: left;
+            margin: 0;
+            padding: 0;
+        }
+
+        .demo2 li {
+            list-style-type: none;
+            display:block;
+            background: #f1f1f1;
+            float: left;
+            margin-bottom: 5px;
+            padding:2px;
+        }
+
+        .demo2 li img {
+            width: 120px;
+            float: left;
+            border: 1px solid #999;
+        }
+
+        .demo2 li a {
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            color: #000;
+        }
+
+        .currentvideo {
+                background: #e6e6e6;
+        }           
 </style>
 <script>
     
@@ -346,6 +391,44 @@
                 }
         });                                                                                    
     }
+    
+    function AgregarComentariosVideo()
+    {
+        if($("#txtComentarioVideo").val() != "")
+        {
+            var comentario = $("#txtComentarioVideo").val();
+            var idAlbum = $("#txtIdAlbumVideo").val();
+            var fkUsuario = "<?php echo $usuario_Valores['User']['id']; ?>"; 
+
+            $.ajax({
+                    url:   '/UCABsocial/Coments/agregarComentario?comentario='+comentario+'&fkAlbums='+idAlbum+'&fkUsers='+fkUsuario,
+                    type:  'post',
+                    success:  function (response) {
+                        $("#spanMensajeDialogoInfoComentariosVideo").html('Se ha agregado exitosamente el comentario');                          
+                        $("#dialog-info-comentarios-video").dialog("open");                                        
+                    }
+            }); 
+        }
+    } 
+    
+    function AgregarComentariosMusica()
+    {
+        if($("#txtComentarioMusica").val() != "")
+        {
+            var comentario = $("#txtComentarioMusica").val();
+            var idAlbum = $("#txtIdAlbumMusica").val();
+            var fkUsuario = "<?php echo $usuario_Valores['User']['id']; ?>"; 
+
+            $.ajax({
+                    url:   '/UCABsocial/Coments/agregarComentario?comentario='+comentario+'&fkAlbums='+idAlbum+'&fkUsers='+fkUsuario,
+                    type:  'post',
+                    success:  function (response) {
+                        $("#spanMensajeDialogoInfoComentariosMusica").html('Se ha agregado exitosamente el comentario');                          
+                        $("#dialog-info-comentarios-musica").dialog("open");                                        
+                    }
+            }); 
+        }
+    }    
     
     function AbrirEliminar()
     {
@@ -424,7 +507,45 @@
                     $("#divImagenLikes").html(response);                    
                 }
         });         
+    }  
+    
+    function RecargarLikesVideo(idAlbum, idUser)
+    { 
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikesVideo").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuario?codigo='+idAlbum+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikesVideo").html(response);                    
+                }
+        });         
     }    
+    
+    function RecargarLikesMusica(idAlbum, idUser)
+    { 
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikesMusica").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuario?codigo='+idAlbum+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikesMusica").html(response);                    
+                }
+        });         
+    }      
     
     function Like()
     {
@@ -440,6 +561,34 @@
         });                                                                              
     }
     
+    function LikeVideo()
+    {
+        var idAlbum = $("#txtIdAlbumVideo").val();
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>";
+        var valor = "LIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/insertarLike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikesVideo(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }    
+    
+    function LikeMusica()
+    {
+        var idAlbum = $("#txtIdAlbumMusica").val();
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>";
+        var valor = "LIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/insertarLike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikesMusica(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }    
+    
     function Unlike()
     {
         var idAlbum = $("#txtIdAlbum").val();
@@ -452,6 +601,34 @@
                     RecargarLikes(idAlbum, idUser);                   
                 }
         });                                                                              
+    }   
+    
+    function UnlikeVideo()
+    {
+        var idAlbum = $("#txtIdAlbumVideo").val();
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>";
+        var valor = "UNLIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/procesarUnlike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikesVideo(idAlbum, idUser);                   
+                }
+        });                                                                              
+    }     
+
+    function UnlikeMusica()
+    {
+        var idAlbum = $("#txtIdAlbumMusica").val();
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>";
+        var valor = "UNLIKE";
+        $.ajax({
+                url:   '/UCABsocial/Albums/procesarUnlike?codigo='+idAlbum+'&user='+idUser+'&valor='+valor,
+                type:  'post',
+                success:  function (response) {
+                    RecargarLikesMusica(idAlbum, idUser);                   
+                }
+        });                                                                              
     }    
     
     function AbrirDialogoAgregarComentarios()
@@ -461,6 +638,22 @@
             $("#dialog-agregar-comentarios").dialog("open");                                                                             
         }
     }
+    
+    function AbrirDialogoAgregarComentariosVideo()
+    {
+        if($("#txtComentarioVideo").val() != "")
+        {
+            $("#dialog-agregar-comentarios-video").dialog("open");                                                                             
+        }
+    } 
+    
+    function AbrirDialogoAgregarComentariosMusica()
+    {
+        if($("#txtComentarioMusica").val() != "")
+        {
+            $("#dialog-agregar-comentarios-musica").dialog("open");                                                                             
+        }
+    }     
     
     function AbrirDialogoAlbum(idAlbum)
     {
@@ -506,6 +699,87 @@
         $("#dialog-album").dialog("open");                                                                             
     } 
     
+    function AbrirDialogoVideo(idVideo)
+    {
+        $("#txtIdAlbumVideo").val(idVideo);      
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarContenidoAlbumVideo?codigo='+idVideo,
+                type:  'post',
+                success:  function (response) {
+                    $("#divContenidoAlbumVideo").html(response);
+                    $("ul.demo2").ytplaylist({addThumbs:true, autoPlay: false, holderId: 'ytvideo'}); 
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbumOtro?codigo='+idVideo,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentariosVideo").html(response);                    
+                }
+        });    
+        
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>"; 
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idVideo,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikesVideo").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuarioVideo?codigo='+idVideo+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikesVideo").html(response);                    
+                }
+        });         
+        
+        $("#dialog-album-video").dialog("open");                                                                             
+    }    
+    
+    function AbrirDialogoMusica(idMusica)
+    {
+        $("#txtIdAlbumMusica").val(idMusica);      
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarContenidoAlbumMusica?codigo='+idMusica,
+                type:  'post',
+                success:  function (response) {
+                    $("#divContenidoAlbumMusica").html(response);
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbumOtro?codigo='+idMusica,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentariosMusica").html(response);                    
+                }
+        });    
+        
+        var idUser = "<?php echo $usuario_Valores['User']['id'] ?>"; 
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbum?codigo='+idMusica,
+                type:  'post',
+                success:  function (response) {
+                    $("#divLikesMusica").html(response);                    
+                }
+        });
+        
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarLikesAlbumUsuarioMusica?codigo='+idMusica+'&user='+idUser,
+                type:  'post',
+                success:  function (response) {
+                    $("#divImagenLikesMusica").html(response);                    
+                }
+        });         
+        
+        $("#dialog-album-musica").dialog("open");                                                                             
+    }     
+    
     function RecargarComentarios()
     {
         $("#txtComentario").val("");
@@ -515,6 +789,32 @@
                 type:  'post',
                 success:  function (response) {
                     $("#divComentarios").html(response);                    
+                }
+        });                                                                              
+    } 
+    
+    function RecargarComentariosVideo()
+    {
+        $("#txtComentarioVideo").val("");
+        var idAlbum = $("#txtIdAlbumVideo").val();
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbumOtro?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentariosVideo").html(response);                    
+                }
+        });                                                                              
+    }
+    
+    function RecargarComentariosMusica()
+    {
+        $("#txtComentarioMusica").val("");
+        var idAlbum = $("#txtIdAlbumMusica").val();
+        $.ajax({
+                url:   '/UCABsocial/Albums/listarComentariosAlbumOtro?codigo='+idAlbum,
+                type:  'post',
+                success:  function (response) {
+                    $("#divComentariosMusica").html(response);                    
                 }
         });                                                                              
     }    
@@ -639,7 +939,35 @@
               $(this).dialog( "close" );
             }            
           }
-        });         
+        });   
+        
+        $( "#dialog-album-video" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          closeOnEscape: false,     
+          width: 1000,
+          height: 700,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Cerrar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        }); 
+        
+        $( "#dialog-album-musica" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          closeOnEscape: false,     
+          width: 1000,
+          height: 700,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Cerrar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });        
         
         $( "#dialog-agregar-comentarios" ).dialog({
           modal: true,
@@ -652,6 +980,42 @@
             Agregar: function() {
               $(this).dialog( "close" );
               AgregarComentarios();
+            },
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });
+        
+        $( "#dialog-agregar-comentarios-video" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Agregar: function() {
+              $(this).dialog( "close" );
+              AgregarComentariosVideo();
+            },
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });  
+        
+        $( "#dialog-agregar-comentarios-musica" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Agregar: function() {
+              $(this).dialog( "close" );
+              AgregarComentariosMusica();
             },
             Cancelar: function() {
               $(this).dialog( "close" );
@@ -672,7 +1036,37 @@
               RecargarComentarios();
             }
           }
-        });                    
+        });    
+        
+        $( "#dialog-info-comentarios-video" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Aceptar: function() {
+              $(this).dialog( "close" );
+              RecargarComentariosVideo();
+            }
+          }
+        }); 
+        
+        $( "#dialog-info-comentarios-musica" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300,  
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Aceptar: function() {
+              $(this).dialog( "close" );
+              RecargarComentariosMusica();
+            }
+          }
+        });        
     
   });
   </script>
@@ -892,11 +1286,45 @@
                         </div>
                         <h3 style="color: #1ABC9C"> <span class="fui-video"></span>&nbsp;&nbsp; VÍDEOS</h3>
                         <div>
-                            <p>No existen publicaciones por el momento</p>
+                            <table>
+                                <?php 
+                                    if(count($albumsVideo)>0)
+                                    {
+                                        foreach($albumsVideo as $album)
+                                        {
+                                            if(($album['albums']['privacidad'] == 'Público') || ($esAmigo=='si')) 
+                                            {                                            
+                                                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/videoAlbum.png' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoVideo(".$album['albums']['id'].")'>".$album['albums']['nombre']." </a></td></tr>";                                                
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'>No existen Albums</td></tr>";
+                                    }
+                                ?>
+                            </table>
                         </div>
                         <h3 style="color:#1ABC9C"><span class="fui-volume"></span>&nbsp;&nbsp; MÚSICA</h3>
                         <div>
-                            <p>No existen publicaciones por el momento</p>
+                            <table>
+                                <?php 
+                                    if(count($albumsMusica)>0)
+                                    {
+                                        foreach($albumsMusica as $album)
+                                        {
+                                            if(($album['albums']['privacidad'] == 'Público') || ($esAmigo=='si')) 
+                                            { 
+                                                echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'><div><img src='../img/musicaAlbum.png' width='60' heigth='40' /></div></td></tr><tr><td style='padding-left: 5px; padding-top: .5em; padding-bottom: .5em;'><a href='javascript:AbrirDialogoMusica(".$album['albums']['id'].")'>".$album['albums']['nombre']." </a></td></tr>";                                                
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        echo "<tr><td style='padding-top: .5em; padding-bottom: .5em;'>No existen Albums</td></tr>";
+                                    }
+                                ?>
+                            </table>
                         </div>
                     </div>
                 </div>                    
@@ -966,9 +1394,101 @@
   </p>
 </div>
 
+<div id="dialog-agregar-comentarios-video" title="Agregar Comentarios">
+  <p>
+    <span id="spanMensajeDialogoAgregarComentariosVideo">¿Realmente desea agregar este comentario?</span>
+  </p>
+</div>
+
+<div id="dialog-agregar-comentarios-musica" title="Agregar Comentarios">
+  <p>
+    <span id="spanMensajeDialogoAgregarMusica">¿Realmente desea agregar este comentario?</span>
+  </p>
+</div>
+
 <div id="dialog-info-comentarios" title="UCABsocial - Comentarios">
   <p>
     <input id="redirectUrlInfo" type="hidden" value=""/>
     <span id="spanMensajeDialogoInfoComentarios"></span>
   </p>
+</div>
+
+<div id="dialog-info-comentarios-video" title="UCABsocial - Comentarios">
+  <p>
+    <input id="redirectUrlInfo" type="hidden" value=""/>
+    <span id="spanMensajeDialogoInfoComentariosVideo"></span>
+  </p>
+</div>
+
+<div id="dialog-info-comentarios-musica" title="UCABsocial - Comentarios">
+  <p>
+    <input id="redirectUrlInfo" type="hidden" value=""/>
+    <span id="spanMensajeDialogoInfoComentariosMusica"></span>
+  </p>
+</div>
+
+<div id="dialog-album-video" title="Youtube">
+    <input id="txtIdAlbumVideo" type="hidden" value=""/>
+    <div class="gradientBoxesWithOuterShadows">
+        <h6 style="float: left;">Contenido</h6>  
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>        
+        <div id="divContenidoAlbumVideo" style="padding-top: 18px;">
+            
+        </div>
+    </div> 
+    <br/>
+    <div class="gradientBoxesWithOuterShadows" style="height: auto;">
+        <h6 style="float: left;">Comentarios</h6> <div id="divLikesVideo" style="float: right;"></div>&nbsp;&nbsp; <div id="divImagenLikesVideo" style="float: right;"></div>
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>
+        <div id="divComentariosVideo" class="gradientBoxesWithOuterShadows" style="padding-top: 18px;">
+            
+        </div>
+        <div style="clear: both;"></div>
+        <br/>
+        <div>
+            <div style='padding:5px; border-style: solid; border-width: 1px;'>
+                <img src="<?php echo $usuario_Valores['User']['foto']; ?>" width='45' height='45' />
+                <textarea id="txtComentarioVideo" placeholder="Introduzca un comentario" style="width: 94%; resize: none;"></textarea>
+            </div>
+        </div>
+        <br/>
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogoAgregarComentariosVideo();"> <span class="fui-new"></span> Agregar Comentario </a>
+        <div style="clear: both;"></div>
+        <div style="clear: both;"></div>         
+    </div>
+</div>
+
+<div id="dialog-album-musica" title="SoundCloud">
+    <input id="txtIdAlbumMusica" type="hidden" value=""/>
+    <div class="gradientBoxesWithOuterShadows">
+        <h6 style="float: left;">Contenido</h6>  
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>        
+        <div id="divContenidoAlbumMusica" style="padding-top: 18px;">
+            
+        </div>
+    </div> 
+    <br/>
+    <div class="gradientBoxesWithOuterShadows" style="height: auto;">
+        <h6 style="float: left;">Comentarios</h6> <div id="divLikesMusica" style="float: right;"></div>&nbsp;&nbsp; <div id="divImagenLikesMusica" style="float: right;"></div>
+        <div style="clear: both;"></div><div style="clear: both;"></div><div style="clear: both;"></div>
+        <br/>
+        <div id="divComentariosMusica" class="gradientBoxesWithOuterShadows" style="padding-top: 18px;">
+            
+        </div>
+        <div style="clear: both;"></div>
+        <br/>
+        <div>
+            <div style='padding:5px; border-style: solid; border-width: 1px;'>
+                <img src="<?php echo $usuario_Valores['User']['foto']; ?>" width='45' height='45' />
+                <textarea id="txtComentarioMusica" placeholder="Introduzca un comentario" style="width: 94%; resize: none;"></textarea>
+            </div>
+        </div>
+        <br/>
+        <a style="float: right; width: 210px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:AbrirDialogoAgregarComentariosMusica();"> <span class="fui-new"></span> Agregar Comentario </a>
+        <div style="clear: both;"></div>
+        <div style="clear: both;"></div>         
+    </div>
 </div>

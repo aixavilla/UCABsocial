@@ -457,6 +457,38 @@
                 background: url('../img/loader.gif') 10px 7px no-repeat;
         }
         
+        //EMPIEZA - Musica        
+        #sformmusica { width: 450px; margin: 0 auto; margin-top: 25px; margin-bottom: 35px; }
+        #sformmusica #searchFieldMusica { 
+        padding: 10px 11px; 
+        padding-left: 60px;
+        color: #999; 
+        width: 450px; 
+        border: 1px solid #ddd; 
+        font-size: 22px; 
+        /* icon source: http://modmyi.com/forums/iphone-4-new-skins-themes-launches/723225-buuf-iphone-4-a-398.html#post6275581 */
+        background: url('../img/soundcloud.png') 6px 7px no-repeat;
+        transition: box-shadow 0.15s linear 0s, color 0.15s linear 0s;
+        -webkit-transition: box-shadow 0.25s linear 0s, color 0.15s linear 0s;
+        -moz-transition: box-shadow 0.25s linear 0s, color 0.15s linear 0s;
+        -o-transition: box-shadow 0.25s linear 0s, color 0.15s linear 0s;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+        -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+        -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset; 
+        font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif; 
+        }
+        #sformmusica #searchFieldMusica:focus { 
+        color: #767676;
+        border-color: #c5d7ee;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(170, 200, 240, 0.9);
+        -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(170, 200, 240, 0.9);
+        -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(170, 200, 240, 0.9);
+        }
+
+        #sformmusica #searchFieldMusica.loading { 
+                background: url('../img/loader.gif') 10px 7px no-repeat;
+        }        
+        
 </style>
 <script>
     
@@ -554,12 +586,38 @@
                     }                            
                 }
         });            
-    }     
+    }
+    
+    function GuardarMusicaAlbum() 
+    {
+        var valorMusica = $("#txtUrlMusica").val();
+        var valorDescripcion = $("#txtDescripcionMusica").val();
+        var valorAlbum = $("#txtIdAlbumMusica").val();        
+        
+        $.ajax({
+                url:   '/UCABsocial/Records/guardarMusica?urlMusica='+valorMusica+'&descripcion='+valorDescripcion+'&fkAlbums='+valorAlbum,
+                type:  'post',
+                success:  function (response) {
+                    var resultado = response;
+                    if(resultado.indexOf("0") != -1)
+                    {  
+                        $("#spanMensajeDialogoSoundcloud").html('Se añadió la canción al album de manera exitosa');                        
+                        $("#dialog-info-soundcloud").dialog("open"); 
+                    }
+                    else
+                    {                                                              
+                        $("#spanMensajeDialogoSoundcloud").html('Se ha producido un problema al procesar el registro, por favor intentelo nuevamente');                             
+                        $("#dialog-info-soundcloud").dialog("open");
+                    }                            
+                }
+        });            
+    }    
     
     function BuscarPorTag()
     {
         if($("#s").val() != "")
         {
+            $("#photos").empty(); 
             $("#s").addClass("loading");
             var tagSearch = $("#s").val();
 
@@ -587,6 +645,7 @@
     {
         if($("#searchField").val() != "")
         {
+            $("#videos").empty();             
             $("#searchField").addClass("loading");
             var tagSearch = $("#searchField").val();
 
@@ -618,32 +677,27 @@
     
     function BuscarMusicaPorTag()
     {
-        if($("#searchField").val() != "")
+        if($("#searchFieldMusica").val() != "")
         {
-            $("#searchField").addClass("loading");
-            var tagSearch = $("#searchField").val();
+            $("#canciones").empty();             
+            $("#searchFieldMusica").addClass("loading");
+            var tagSearch = $("#searchFieldMusica").val();
 
             $.ajax({
-                    url:   'http://gdata.youtube.com/feeds/api/videos?q='+tagSearch+'&alt=json',
+                    url:   'http://api.soundcloud.com/tracks.json?client_id=0b18852cbcb5a6e478a40b3de856f318&q='+tagSearch+'&limit=15',
                     type:  'post',
                     contentType: "jsonp",
                     dataType: 'jsonp',                    
                     success:  function (response) {
-                        $("#searchField").removeClass("loading");
-                        $.each(response.feed.entry, function(index, item) {
-                            var pos = item.link[0].href.indexOf("&feature");
-                            var enlace = item.link[0].href.substring(0,pos);
-                            var posV = enlace.indexOf("v=");                            
-                            var enlaceNew = enlace.substring(posV+2);
-                            var enlaceFinal = "http://youtube.com/v/"+enlaceNew;
-                            
-                            var ncode = "<div style='padding-top:5px;'><embed width='320' height='180' src='"+enlaceFinal+"' type='application/x-shockwave-flash'><embed>  <a href='Javascript:AbrirDialogoGuardarVideo(\""+enlace+"\");'><img src='../img/full-image.png' alt='fullsize'></a> </div>";
-                            $("#videos").append(ncode);
+                        $("#searchFieldMusica").removeClass("loading");
+                        $.each(response, function(index, item) {                                                     
+                            var ncode = "<table style='width:350px; border:1px solid black; font-size:8pt;'><tr><td><img src='"+item.user.avatar_url+"' width='80' height='80'/></td><td><table><tr><td><b>Título:</b>"+item.title+"</td></tr><tr><td><b>Género:</b>"+item.genre+"</td></tr></table></td><td><center><a href='Javascript:AbrirDialogoGuardarMusica(\""+item.permalink_url+"\");'><img src='../img/full-image.png' alt='fullsize'></a></center></td></tr></table>";                            
+                            $("#canciones").append(ncode);
                         });                   
                     },
                     error: function(xhr, type, exception) { 
-                            $("#searchField").removeClass("loading");
-                            $("#videos").html("Error: " + type); 
+                            $("#searchFieldMusic").removeClass("loading");
+                            $("#canciones").html("Error: " + type); 
                     }                    
             });
         }
@@ -758,7 +812,7 @@
                 type:  'post',
                 success:  function (response) {
                     $("#divContenidoAlbumMusica").html(response);
-                    $("#carousel").infiniteCarousel({});                    
+                    //$("#carousel").infiniteCarousel({});                    
                 }
         });
         
@@ -1005,10 +1059,10 @@
         $("#txtDescripcionMusica").val("");
         var idAlbum = $("#txtIdAlbumMusica").val();
         $.ajax({
-                url:   '/UCABsocial/Albums/listarContenidoAlbum?codigo='+idAlbum,
+                url:   '/UCABsocial/Albums/listarContenidoAlbumMusica?codigo='+idAlbum,
                 type:  'post',
                 success:  function (response) {
-                    $("#divContenidoAlbumVideo").html(response);
+                    $("#divContenidoAlbumMusica").html(response);
                     //$("#carousel").infiniteCarousel({});                    
                 }
         });                                                                              
@@ -1046,6 +1100,12 @@
          $("#txtUrlVideo").val(urlVideo);        
         $("#dialog-guardar-video").dialog("open");                                                                             
     }    
+    
+    function AbrirDialogoGuardarMusica(urlMusica)
+    {
+         $("#txtUrlMusica").val(urlMusica);        
+        $("#dialog-guardar-musica").dialog("open");                                                                             
+    }      
     
     function AbrirDialogoEliminarComentario(idComentario)
     {
@@ -1785,6 +1845,22 @@
           }          
         });        
         
+        $( "#dialog-agregar-contenido-musica" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 700,
+          height: 700,
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Listo: function() {
+              $(this).dialog( "close" );
+              $("#searchFieldMusica").val("");
+              $("#canciones").empty();            
+            }            
+          }          
+        });        
+        
         $( "#dialog-guardar-foto" ).dialog({
           modal: true,
           autoOpen: false, 
@@ -1821,6 +1897,24 @@
           }
         });         
         
+        $( "#dialog-guardar-musica" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          closeOnEscape: false,     
+          width: 500,
+          height: 300, 
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Guardar: function() {
+              $(this).dialog( "close" );
+              GuardarMusicaAlbum();
+            },              
+            Cancelar: function() {
+              $(this).dialog( "close" );
+            }            
+          }
+        });          
+        
         $( "#dialog-info-instagram" ).dialog({
           modal: true,
           autoOpen: false, 
@@ -1849,7 +1943,22 @@
               RecargarContenidoVideo();
             }
           }
-        });        
+        }); 
+        
+        $( "#dialog-info-soundcloud" ).dialog({
+          modal: true,
+          autoOpen: false, 
+          width: 600,
+          height: 300, 
+          closeOnEscape: false,
+          open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },          
+          buttons: {
+            Aceptar: function() {
+              $(this).dialog( "close" );
+              RecargarContenidoMusica();
+            }
+          }
+        });           
 
   });
   </script>
@@ -2344,7 +2453,7 @@
 
 <div id="dialog-agregar-contenido-video" title="Youtube">   
     <section id="sformvideo">
-        <small style="font-size: 8pt;"><b>Nota</b>: No se permiten espacios ni signos de puntuación.</small>
+        <small style="font-size: 8pt;"><b>Nota</b>: No se permiten signos de puntuación.</small>
         <div style="clear: both;"></div>
         <br/>
         <div style="clear: both;"></div>         
@@ -2365,6 +2474,29 @@
     </center>    
 </div>
 
+<div id="dialog-agregar-contenido-musica" title="Soundcloud">   
+    <section id="sformmusica">
+        <small style="font-size: 8pt;"><b>Nota</b>: No se permiten signos de puntuación.</small>
+        <div style="clear: both;"></div>
+        <br/>
+        <div style="clear: both;"></div>         
+        <input type="text" id="searchFieldMusica" name="searchFieldMusica" class="sfield" placeholder="Introduzca un tag..." autocomplete="off">
+        <div style="clear: both;"></div>
+        <br/>
+        <div style="clear: both;"></div> 
+        <a style="float: right; width: 120px; height: 33px;" class="btn btn-large btn-block btn-primary" href="Javascript:BuscarMusicaPorTag();"> <span class="fui-search"></span>Buscar</a>            
+    </section>
+    <div style="clear: both;"></div>
+    <br/>
+    <div style="border-top: #000 1px solid;"></div>
+    <div style="clear: both;"></div>
+    <br/>
+    <div style="clear: both;"></div>    
+    <center>
+        <section id="canciones"></section>    
+    </center>    
+</div>
+
 <div id="dialog-guardar-foto" title="Agregar Foto al Album">
   <p>
     <input id="txtUrlFoto" type="hidden" value=""/>
@@ -2379,6 +2511,13 @@
   </p>
 </div>
 
+<div id="dialog-guardar-musica" title="Agregar Canción al Album">
+  <p>
+    <input id="txtUrlMusica" type="hidden" value=""/>
+    <textarea id="txtDescripcionMusica" placeholder="Introduzca una descripción para la canción" style="width: 99%; resize: none;"></textarea>
+  </p>
+</div>
+
 <div id="dialog-info-instagram" title="Confirmación - Instagram">
   <p>
     <span id="spanMensajeDialogoInstagram"></span>
@@ -2388,6 +2527,12 @@
 <div id="dialog-info-youtube" title="Confirmación - Youtube">
   <p>
     <span id="spanMensajeDialogoYoutube"></span>
+  </p>
+</div>
+
+<div id="dialog-info-soundcloud" title="Confirmación - Soundcloud">
+  <p>
+    <span id="spanMensajeDialogoSoundcloud"></span>
   </p>
 </div>
 
