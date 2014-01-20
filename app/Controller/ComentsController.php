@@ -14,11 +14,15 @@ class ComentsController extends AppController
             $atributos = array(
                 0 => $this->params['url']['codigo']
             );
-
-            $this->loadModel("Coment");
+            
+            $valor = $this->params['url']['codigo'];
+            
             $this->loadModel("Notification");
-            $notificacion = $this->Notification->eliminarNotificaciones($atributos[0]);            
+            $notificacion = $this->Notification->eliminarNotificaciones($valor);    
+            
+            $this->loadModel("Coment");      
             $coment = $this->Coment->eliminarComentario($atributos[0]);
+            
             if(isset($coment))
                 {
                     $response = 1;

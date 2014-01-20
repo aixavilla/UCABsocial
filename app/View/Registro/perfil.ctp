@@ -1004,7 +1004,7 @@
         $("#txtComentarioVideo").val("");
         var idAlbum = $("#txtIdAlbumVideo").val();
         $.ajax({
-                url:   '/UCABsocial/Albums/listarComentariosAlbum?codigo='+idAlbum,
+                url:   '/UCABsocial/Albums/listarComentariosAlbumVideo?codigo='+idAlbum,
                 type:  'post',
                 success:  function (response) {
                     $("#divComentariosVideo").html(response);                    
@@ -1017,7 +1017,7 @@
         $("#txtComentarioMusica").val("");
         var idAlbum = $("#txtIdAlbumMusica").val();
         $.ajax({
-                url:   '/UCABsocial/Albums/listarComentariosAlbum?codigo='+idAlbum,
+                url:   '/UCABsocial/Albums/listarComentariosAlbumMusica?codigo='+idAlbum,
                 type:  'post',
                 success:  function (response) {
                     $("#divComentariosMusica").html(response);                    
@@ -1997,9 +1997,27 @@
 	</div>
         <a href="#"><span style="color: #ECF0F1; font-size:15pt; float:right; margin-top:45px;margin-right: 15px"> <img src="<?php echo $imagen; ?>" width="25" height="25"/>  <?php echo $usernameUsuario; ?></span></a>        
         <div id="dropdownNotificaciones" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 20px">
-                <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
+            <?php  
+                if(count($notificaciones)>0)
+                {
+                    echo '<span class="notification-bubble" title="Notifications" style="background-color: rgb(245, 108, 126); display: inline;">'.count($notificaciones).'</span>';
+                }
+            ?>                 
+            <a id="toggleNotificaciones" class="dropdown-toggle" href="#"><span class="fui-mail" ></span></a>
                 <ul class="dropdown-menu" style="border: 1px solid black; width: 300px;">
-		    <li><a href="#">No existen notificaciones</a></li>
+                    <?php 
+                        if(count($notificaciones)>0)
+                        {
+                            foreach($notificaciones as $objNotificacion)
+                            {
+                                echo "<li><table border='1' style='border: 1px solid black;'><tr><td style='padding-top: .5em; padding-bottom: .5em;'><a href='javascript:MarcarComoLeida(".$objNotificacion['N']['id'].");'><img src='".$objNotificacion['U']['foto']."' width='40' heigth='40' />".$objNotificacion['N']['mensaje']."</a></td></tr></table></li>";
+                            }
+                        }
+                        else 
+                        {
+                            echo "<li><table><tr><td style='padding-top: .5em; padding-bottom: .5em;'>No existen notificaciones</td></tr></table></li>";
+                        }
+                    ?>
 		</ul>                
 	</div>   
         <div id="dropdownSolicitudes" class="dropdown" style="color: #1ABC9C; font-size:25pt; float:right; margin-top:35px;margin-right: 30px">

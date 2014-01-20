@@ -53,7 +53,8 @@ class RegistroController extends AppController
      */
     public function perfil()
     {
-        try{
+        try
+        {
             if(isset($_SESSION['User']))
             {
                 $this->layout='paginas'; 
@@ -97,10 +98,15 @@ class RegistroController extends AppController
                  }
                  $solicitudesGrafo = $this->amigosGrafo($solicitudes);
                  $this->set('solicitudesGrafo',$solicitudesGrafo);           
-
+                 
                  $this->loadModel("User");
                  $todosUsuario = $this->User->usuariosCompletos();
                  $this->set('todos',$todosUsuario);
+
+                 $this->loadModel("Notification");
+                 $notificacionesList = $this->Notification->listado($Usuario[0]['users']['id']);
+                 $this->Session->write('asd', $notificacionesList);
+                 $this->set('notificaciones',$notificacionesList);                   
 
                  $this->loadModel("Album");
                  $albums = $this->Album->listarAlbums($Usuario[0]['users']['id'], 'Foto');
@@ -132,9 +138,9 @@ class RegistroController extends AppController
                              } 
                          }
                      }
-                 }
-                 $this->Session->write('data',$data);     //QUITAR                 
-                 $this->set('imagenesAlbumsAmigos',$data);                
+                 }                
+                 $this->set('imagenesAlbumsAmigos',$data);                  
+                 
             }          
             else 
             {
@@ -143,8 +149,8 @@ class RegistroController extends AppController
         }
         catch(Exception $ex)
         {
-            $this->log("Error al tratar de hacer el ingreso del usuario a la red social");
-            $this->set('error',"error");           
+            $this->log("Error al mostrar el perfil");
+            //$this->set('error',"error");           
         }
      }
     
