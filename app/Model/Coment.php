@@ -34,6 +34,18 @@ class Coment extends AppModel
             $this->log("Se produjo un error agregando el comentario en el sistema - La exccepcion es: "+$excep->getMessage());
             throw new Exception('Error en el agregar comentario');     
         }            
-    }    
+    } 
     
+    public function ultimoComentario()
+    {
+        try
+        {
+            return $this->query("SELECT MAX(id) FROM coments");   
+        }
+        catch (Exception $excep)
+        {
+            $this->log("Se produjo un error consultando el ultimo comentario insertado - La exccepcion es: "+$excep->getMessage());
+            throw new Exception('Error en el consultar ultimo comentario');     
+        }         
+    }
 }

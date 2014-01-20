@@ -28,7 +28,7 @@ class ComentTest extends CakeTestCase {
         
 	public function testEliminarComent() {
             // Invocación al método 
-            $consulta = $this->Coment->eliminarComentario(21);            
+            $consulta = $this->Coment->eliminarComentario(22);            
 
             // Test Assert
             $this->assertEqual($consulta, 0);

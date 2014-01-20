@@ -776,7 +776,7 @@
         });
         
         $.ajax({
-                url:   '/UCABsocial/Albums/listarComentariosAlbum?codigo='+idAlbum,
+                url:   '/UCABsocial/Albums/listarComentariosAlbumVideo?codigo='+idAlbum,
                 type:  'post',
                 success:  function (response) {
                     $("#divComentariosVideo").html(response);                    
@@ -817,7 +817,7 @@
         });
         
         $.ajax({
-                url:   '/UCABsocial/Albums/listarComentariosAlbum?codigo='+idAlbum,
+                url:   '/UCABsocial/Albums/listarComentariosAlbumMusica?codigo='+idAlbum,
                 type:  'post',
                 success:  function (response) {
                     $("#divComentariosMusica").html(response);                    

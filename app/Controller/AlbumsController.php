@@ -175,6 +175,48 @@ class AlbumsController extends AppController
         }     
     } 
     
+        /*
+     * Funcion que nos retorna un arreglo con todos los comentarios del album seleccionado. 
+     * $variable - Representa el id del Album a listar para obtener sus comentarios
+     */
+    public function listarComentariosAlbumVideo()
+    {
+        try
+        {
+            $variable = $this->params['url']['codigo'];
+            $this->loadModel("Album");
+            $ComentariosAlbum = $this->Album->listarComentariosAlbum($variable);
+            $this->layout = 'ajax';     
+            $this->set('comentariosAlbum', $ComentariosAlbum); 
+            
+        } 
+        catch (Exception $ex) 
+        {
+            $this->log("Ocurrio un error al consultar el contenido del Album");
+        }     
+    }
+    
+    /*
+     * Funcion que nos retorna un arreglo con todos los comentarios del album seleccionado. 
+     * $variable - Representa el id del Album a listar para obtener sus comentarios
+     */
+    public function listarComentariosAlbumMusica()
+    {
+        try
+        {
+            $variable = $this->params['url']['codigo'];
+            $this->loadModel("Album");
+            $ComentariosAlbum = $this->Album->listarComentariosAlbum($variable);
+            $this->layout = 'ajax';     
+            $this->set('comentariosAlbum', $ComentariosAlbum); 
+            
+        } 
+        catch (Exception $ex) 
+        {
+            $this->log("Ocurrio un error al consultar el contenido del Album");
+        }     
+    }    
+    
     /*
      * Funcion que nos retorna un arreglo con todos los comentarios del album seleccionado. 
      * $variable - Representa el id del Album a listar para obtener sus comentarios

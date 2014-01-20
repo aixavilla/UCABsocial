@@ -11,7 +11,7 @@ class AlbumTest extends CakeTestCase {
 	public function tearDown() {
 		parent::tearDown();
 	}
-        
+
 	public function testListarAlbums() {
             // Invocación al método
             $data = $this->Album->listarAlbums(35, 'Foto'); 
@@ -22,7 +22,7 @@ class AlbumTest extends CakeTestCase {
 	public function testRegistrarAlbum() {
             // Invocación al método 
             $atributos = array(
-            0 => "NombreAlbumNuevo",
+            0 => "AlbumDePrueba",
             1 => 0,
             2 => 35,
             3 => 'Foto');
