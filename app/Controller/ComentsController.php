@@ -16,6 +16,8 @@ class ComentsController extends AppController
             );
 
             $this->loadModel("Coment");
+            $this->loadModel("Notification");
+            $notificacion = $this->Notification->eliminarNotificaciones($atributos[0]);            
             $coment = $this->Coment->eliminarComentario($atributos[0]);
             if(isset($coment))
                 {
@@ -27,8 +29,6 @@ class ComentsController extends AppController
                 }
             $this->set('respuesta', $response);                 
             $this->layout = 'ajax';
-        
-            
             } 
             
             catch (Exception $ex) {
